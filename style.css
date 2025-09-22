@@ -236,11 +236,11 @@ body::before {
 .reel::before {
     content: '';
     position: absolute;
-    /* 모바일: 릴 높이 120px에서 중앙 40px 심볼 영역 */
-    top: calc(50% - 20px); /* 정확한 중앙 계산 */
-    left: 3px;
-    right: 3px;
-    height: 40px;
+    /* 🎯 완벽한 중앙 정렬: 릴의 정확한 중앙에 위치 */
+    top: 40px; /* 릴 높이 120px에서 중앙: (120-40)/2 = 40px */
+    left: 0;
+    right: 0;
+    height: 40px; /* 심볼과 동일한 높이 */
     border: 2px solid var(--vintage-gold);
     border-radius: 6px;
     background: rgba(212, 175, 55, 0.08);
@@ -296,11 +296,11 @@ body::before {
     }
     
     .reel::before {
-        /* 데스크톱: 릴 높이 150px에서 중앙 50px 심볼 영역 */
-        top: calc(50% - 25px); /* 정확한 중앙 계산 */
-        height: 50px;
-        left: 3px;
-        right: 3px;
+        /* 데스크톱: 릴 높이 150px에서 정확한 중앙 위치 */
+        top: 50px; /* 릴 높이 150px에서 중앙: (150-50)/2 = 50px */
+        height: 50px; /* 심볼과 동일한 높이 */
+        left: 0;
+        right: 0;
         border-radius: 8px;
     }
     
@@ -797,7 +797,8 @@ body::before {
 }
 
 /* 모바일 반응형 */
-@media (max-width: 768px) {
+/* 일반 모바일 기기 */
+@media (min-width: 401px) and (max-width: 768px) {
     .title {
         font-size: 2rem;
     }
@@ -822,6 +823,13 @@ body::before {
     .reel {
         width: 90px; /* 모바일에서도 더 넓게 */
         height: 120px;
+    }
+    
+    .reel::before {
+        top: 40px; /* 릴 높이 120px에서 심볼 중앙 위치 */
+        height: 39px; /* 심볼 height 40px - border-bottom 1px = 39px 실제 컨텐츠 영역 */
+        left: 0;
+        right: 0;
     }
     
     .symbol {
@@ -850,8 +858,8 @@ body::before {
     }
 }
 
-/* 아이폰 SE, 갤럭시 폴드 등 소형 기기 */
-@media (max-width: 380px) {
+/* Galaxy Z Fold 5 접힘, Galaxy S8+ 등 초소형 기기 */
+@media (max-width: 360px) {
     .container {
         padding: 8px;
     }
@@ -868,10 +876,10 @@ body::before {
     }
     
     .reel::before {
-        top: calc(50% - 17.5px); /* 35px 높이의 절반 */
-        height: 35px;
-        left: 2px;
-        right: 2px;
+        top: 35px; /* 릴 높이 105px에서 심볼 시작 위치 */
+        height: 34px; /* 심볼 height 35px - border-bottom 1px = 34px 실제 컨텐츠 영역 */
+        left: 0;
+        right: 0;
         border-radius: 4px;
     }
     
@@ -881,8 +889,8 @@ body::before {
     }
 }
 
-/* 아이폰 12 mini, 갤럭시 S 시리즈 등 중간 크기 */
-@media (min-width: 381px) and (max-width: 480px) {
+/* iPhone SE, 소형 모바일 */
+@media (min-width: 361px) and (max-width: 400px) {
     .container {
         padding: 10px;
     }
@@ -891,6 +899,13 @@ body::before {
         width: min(85px, calc((100vw - 50px) / 3));
         height: 120px;
         min-width: 75px;
+    }
+    
+    .reel::before {
+        top: 40px; /* 릴 높이 120px에서 심볼 중앙 위치 */
+        height: 39px; /* 심볼 height 40px - border-bottom 1px = 39px 실제 컨텐츠 영역 */
+        left: 0;
+        right: 0;
     }
     
     .symbol {
