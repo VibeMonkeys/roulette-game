@@ -176,10 +176,11 @@ export class GameState {
     }
 
     /**
-     * 게임 플레이 가능 여부 확인
+     * 게임 플레이 가능 여부 확인 (테스트용: hasPlayed 체크 비활성화)
      */
     canPlay() {
-        return !this.state.hasPlayed && !this.state.isSpinning && this.state.isInitialized;
+        return !this.state.isSpinning && this.state.isInitialized;
+        // return !this.state.hasPlayed && !this.state.isSpinning && this.state.isInitialized;
     }
 
     /**

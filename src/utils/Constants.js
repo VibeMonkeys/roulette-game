@@ -33,10 +33,11 @@ export const PRIZE_CONFIG = {
 export const GAME_CONFIG = {
     REEL_COUNT: 3,
     SYMBOL_HEIGHT: 50,
-    SPIN_DURATION_BASE: 20,
-    SPIN_DURATION_INCREMENT: 10,
-    ANIMATION_DELAY_MIN: 50,
-    ANIMATION_DELAY_MAX: 200,
+    SPIN_DURATION_BASE: 30,        // 더 많은 회전
+    SPIN_DURATION_INCREMENT: 15,   // 릴별 차이 증가
+    ANIMATION_DELAY_MIN: 20,       // 더 빠른 시작
+    ANIMATION_DELAY_MAX: 120,      // 더 부드러운 감속
+    ANIMATION_EASE_FACTOR: 0.15,   // 감속 계수
     RESULT_DISPLAY_DELAY: 3000,
     STORAGE_KEY: 'retroSlotGame'
 };

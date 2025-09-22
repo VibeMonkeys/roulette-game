@@ -49,22 +49,23 @@ export class AnimationSystem {
                     this.updateReelPosition(reel, randomSymbol);
                     currentSpin++;
                     
-                    // 회전 속도 점진적 감소
-                    const animationDelay = Math.min(
-                        GAME_CONFIG.ANIMATION_DELAY_MIN + currentSpin * 2, 
-                        GAME_CONFIG.ANIMATION_DELAY_MAX
-                    );
+                    // 부드러운 감속 곡선 (easeOut)
+                    const progress = currentSpin / spins;
+                    const easeOutProgress = 1 - Math.pow(1 - progress, 3);
+                    
+                    const animationDelay = GAME_CONFIG.ANIMATION_DELAY_MIN + 
+                        (GAME_CONFIG.ANIMATION_DELAY_MAX - GAME_CONFIG.ANIMATION_DELAY_MIN) * easeOutProgress;
                     
                     setTimeout(animate, animationDelay);
                 } else {
-                    // 최종 심볼로 정지
-                    this.updateReelPosition(reel, finalSymbol);
+                    // 최종 심볼로 부드럽게 정지
+                    await this.smoothStopReel(reel, finalSymbol);
                     
                     // 마지막 릴이면 정지 효과 추가
                     if (reelIndex === GAME_CONFIG.REEL_COUNT - 1) {
-                        await delay(300);
-                        this.ui.playStopEffect();
                         await delay(200);
+                        this.ui.playStopEffect();
+                        await delay(100);
                     }
                     
                     resolve();
@@ -84,6 +85,26 @@ export class AnimationSystem {
             const offset = -symbolIndex * GAME_CONFIG.SYMBOL_HEIGHT;
             reel.style.transform = `translateY(${offset}px)`;
         }
+    }
+
+    /**
+     * 부드러운 릴 정지 애니메이션
+     */
+    async smoothStopReel(reel, finalSymbol) {
+        // 몇 개의 심볼을 더 돌린 후 최종 심볼에 정착
+        const extraSpins = 3;
+        const symbols = [...SYMBOLS];
+        const finalIndex = symbols.indexOf(finalSymbol);
+        
+        for (let i = 0; i < extraSpins; i++) {
+            const tempSymbol = symbols[(finalIndex + symbols.length - extraSpins + i) % symbols.length];
+            this.updateReelPosition(reel, tempSymbol);
+            await delay(80 + i * 20); // 점진적으로 느려짐
+        }
+        
+        // 최종 위치로 부드럽게 이동
+        this.updateReelPosition(reel, finalSymbol);
+        await delay(50);
     }
 
     /**

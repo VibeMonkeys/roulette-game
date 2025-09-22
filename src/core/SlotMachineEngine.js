@@ -39,12 +39,12 @@ export class SlotMachineEngine {
             // 초기 UI 설정
             await this.setupInitialUI();
             
-            // 이미 플레이한 경우 처리
-            if (this.gameState.get('hasPlayed')) {
-                this.handleAlreadyPlayed();
-            } else {
+            // 테스트용: 1회 제한 비활성화
+            // if (this.gameState.get('hasPlayed')) {
+            //     this.handleAlreadyPlayed();
+            // } else {
                 this.setupNewGame();
-            }
+            // }
             
             this.isInitialized = true;
             
@@ -213,16 +213,20 @@ export class SlotMachineEngine {
     }
 
     /**
-     * 게임 완료 처리
+     * 게임 완료 처리 (테스트용: 버튼 재활성화)
      */
     completeGame() {
-        // UI 상태 업데이트
-        this.uiManager.updateSpinButton('played');
-        
-        // 완료 메시지 표시
+        // 테스트용: 버튼을 다시 활성화
         setTimeout(() => {
-            this.uiManager.updateGameStatus(MESSAGES.GAME_COMPLETE);
+            this.uiManager.updateSpinButton('ready');
+            this.uiManager.updateGameStatus(MESSAGES.INITIAL);
         }, 3000);
+        
+        // // 원래 코드 (1회 제한용)
+        // this.uiManager.updateSpinButton('played');
+        // setTimeout(() => {
+        //     this.uiManager.updateGameStatus(MESSAGES.GAME_COMPLETE);
+        // }, 3000);
     }
 
     /**
