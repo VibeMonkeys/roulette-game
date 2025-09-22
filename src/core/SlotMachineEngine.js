@@ -60,11 +60,15 @@ export class SlotMachineEngine {
     setupEventListeners() {
         // 스핀 버튼 클릭
         if (this.uiManager.elements.spinBtn) {
+            console.log('🎰 Setting up spin button click listener');
             this.eventHandlers.push(
                 addEventListener(this.uiManager.elements.spinBtn, 'click', () => {
+                    console.log('🎰 Spin button clicked!');
                     this.handleSpin();
                 })
             );
+        } else {
+            console.error('❌ Spin button not found!');
         }
 
         // 키보드 이벤트 (스페이스바)
@@ -117,18 +121,14 @@ export class SlotMachineEngine {
      * 새 게임 설정
      */
     setupNewGame() {
-        // 초기 릴 위치 랜덤 설정
-        const randomSymbols = [
-            this.probabilitySystem.getRandomSymbol(),
-            this.probabilitySystem.getRandomSymbol(),
-            this.probabilitySystem.getRandomSymbol()
-        ];
+        // 초기 릴 위치를 고정값으로 설정 (7, 🍒, 🍋)
+        const initialSymbols = ['7', '🍒', '🍋'];
         
-        randomSymbols.forEach((symbol, index) => {
+        initialSymbols.forEach((symbol, index) => {
             this.uiManager.updateReelDisplay(index, symbol);
         });
         
-        this.gameState.updateState({ currentSymbols: randomSymbols });
+        this.gameState.updateState({ currentSymbols: initialSymbols });
     }
 
     /**
@@ -150,6 +150,8 @@ export class SlotMachineEngine {
      * 스핀 처리
      */
     async handleSpin() {
+        console.log('🎰 handleSpin called!');
+        
         if (!this.gameState.canPlay()) {
             console.warn('Cannot play: Game state does not allow playing');
             return;

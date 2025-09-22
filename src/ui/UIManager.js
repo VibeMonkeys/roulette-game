@@ -14,9 +14,12 @@ export class UIManager {
      * DOM 요소들 초기화
      */
     initializeElements() {
+        const spinBtn = getElement('spinBtn');
+        console.log('🎰 Spin button found:', spinBtn);
+        
         return {
             // 게임 영역
-            spinBtn: getElement('spinBtn'),
+            spinBtn: spinBtn,
             spinText: null, // spinBtn 내부에서 찾음
             
             // 릴 관련
