@@ -1,0 +1,35 @@
+# 백업 파일
+*.backup
+*.bak
+*.old
+
+# 개발 도구
+.DS_Store
+Thumbs.db
+
+# 로그 파일
+*.log
+logs/
+
+# 임시 파일
+tmp/
+temp/
+
+# IDE 설정
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 환경 설정 (민감한 정보가 있다면)
+.env
+.env.local
+.env.production
+
+# 의존성 (현재는 없지만 추후를 위해)
+node_modules/
+npm-debug.log*
+
+# 빌드 출력 (현재는 없지만 추후를 위해)
+dist/
+build/
