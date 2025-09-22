@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>레트로 슬롯머신 - 행운을 잡아라!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 영역 -->
+        <header class="header">
+            <h1 class="title">🎰 RETRO SLOT 🎰</h1>
+            <p class="subtitle">1999 LUCKY MACHINE</p>
+        </header>
+
+        <!-- 게임 영역 -->
+        <main class="game-area">
+            <!-- 슬롯머신 프레임 -->
+            <div class="slot-machine">
+                <div class="slot-frame">
+                    <!-- 3개의 릴 -->
+                    <div class="reel-container">
+                        <div class="reel" id="reel1">
+                            <div class="symbol">7</div>
+                            <div class="symbol">🍒</div>
+                            <div class="symbol">🍋</div>
+                            <div class="symbol">⭐</div>
+                            <div class="symbol">💎</div>
+                            <div class="symbol">🔔</div>
+                            <div class="symbol">❌</div>
+                        </div>
+                        <div class="reel" id="reel2">
+                            <div class="symbol">7</div>
+                            <div class="symbol">🍒</div>
+                            <div class="symbol">🍋</div>
+                            <div class="symbol">⭐</div>
+                            <div class="symbol">💎</div>
+                            <div class="symbol">🔔</div>
+                            <div class="symbol">❌</div>
+                        </div>
+                        <div class="reel" id="reel3">
+                            <div class="symbol">7</div>
+                            <div class="symbol">🍒</div>
+                            <div class="symbol">🍋</div>
+                            <div class="symbol">⭐</div>
+                            <div class="symbol">💎</div>
+                            <div class="symbol">🔔</div>
+                            <div class="symbol">❌</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 당첨 라인 표시 -->
+                    <div class="win-line"></div>
+                </div>
+                
+                <!-- 스핀 버튼 -->
+                <button class="spin-button" id="spinBtn">
+                    <span class="spin-text">SPIN</span>
+                </button>
+            </div>
+
+            <!-- 결과 표시 영역 -->
+            <div class="result-area" id="resultArea">
+                <div class="result-message" id="resultMessage"></div>
+                <div class="prize-info" id="prizeInfo"></div>
+            </div>
+        </main>
+
+        <!-- 당첨 확률 표시 -->
+        <aside class="prize-table">
+            <h3>🏆 PRIZE TABLE 🏆</h3>
+            <div class="prize-list">
+                <div class="prize-item">
+                    <span class="prize-symbols">💎 💎 💎</span>
+                    <span class="prize-name">DIAMOND</span>
+                    <span class="prize-rate">1%</span>
+                </div>
+                <div class="prize-item">
+                    <span class="prize-symbols">⭐ ⭐ ⭐</span>
+                    <span class="prize-name">STAR</span>
+                    <span class="prize-rate">2%</span>
+                </div>
+                <div class="prize-item">
+                    <span class="prize-symbols">🔔 🔔 🔔</span>
+                    <span class="prize-name">BELL</span>
+                    <span class="prize-rate">3%</span>
+                </div>
+                <div class="prize-item">
+                    <span class="prize-symbols">7 7 7</span>
+                    <span class="prize-name">LUCKY 7</span>
+                    <span class="prize-rate">4%</span>
+                </div>
+                <div class="prize-item">
+                    <span class="prize-symbols">OTHER</span>
+                    <span class="prize-name">TRY AGAIN</span>
+                    <span class="prize-rate">90%</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 게임 상태 표시 -->
+        <div class="game-status" id="gameStatus">
+            <p>🎯 한 번의 기회로 행운을 잡아보세요!</p>
+        </div>
+
+        <!-- 푸터 -->
+        <footer class="footer">
+            <p>&copy; 1999 RETRO GAMING CORP.</p>
+        </footer>
+    </div>
+
+    <!-- 게임 완료 모달 -->
+    <div class="modal" id="gameOverModal">
+        <div class="modal-content">
+            <h2>🎮 GAME OVER 🎮</h2>
+            <p>이미 게임에 참여하셨습니다!</p>
+            <p>다음 기회를 기다려주세요.</p>
+            <button class="modal-close">확인</button>
+        </div>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
