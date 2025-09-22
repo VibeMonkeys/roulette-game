@@ -185,22 +185,27 @@ body::before {
 .reel-container {
     display: flex;
     justify-content: center;
-    gap: 0; /* 간격 완전 제거 */
+    gap: 0;
     width: 100%;
-    min-width: 280px; /* 갭 제거로 최소 너비 감소 */
+    min-width: 270px;
+    max-width: 100%;
+    /* 모든 기종 대응을 위한 유연한 크기 조정 */
+    padding: 0 5px;
+    box-sizing: border-box;
 }
 
 .reel {
-    /* 모바일 우선 크기 - 꽉 찬 디자인 */
-    width: 90px; /* 너비 증가 */
-    height: 120px; /* 3개 심볼이 완볽하게 보이도록 */
+    /* 반응형 릴 크기 */
+    width: min(90px, calc((100vw - 60px) / 3)); /* 화면 크기에 따라 자동 조정 */
+    height: 120px;
     background: linear-gradient(180deg, var(--paper-white) 0%, var(--soft-beige) 100%);
     border: 2px solid var(--warm-brown);
-    border-radius: 0; /* 모서리 둥글기 제거로 연결된 느낌 */
+    border-radius: 0;
     overflow: hidden;
     position: relative;
-    flex: 1; /* 균등하게 공간 분할 */
-    /* 릴 자체는 완전히 고정 */
+    flex: 1;
+    max-width: 120px; /* 최대 크기 제한 */
+    min-width: 80px; /* 최소 크기 보장 */
     transform: none !important;
     will-change: auto;
     box-shadow: 
@@ -231,19 +236,19 @@ body::before {
 .reel::before {
     content: '';
     position: absolute;
-    top: 40px;
-    left: 2px;
-    right: 2px;
+    /* 모바일: 릴 높이 120px에서 중앙 40px 심볼 영역 */
+    top: calc(50% - 20px); /* 정확한 중앙 계산 */
+    left: 3px;
+    right: 3px;
     height: 40px;
     border: 2px solid var(--vintage-gold);
-    border-radius: 5px;
+    border-radius: 6px;
     background: rgba(212, 175, 55, 0.08);
     z-index: 10;
     pointer-events: none;
     box-shadow: 
         0 0 8px rgba(212, 175, 55, 0.3),
         inset 0 0 8px rgba(212, 175, 55, 0.1);
-    /* 뷰포트는 절대 움직이지 않음 */
     transform: none !important;
 }
 
@@ -291,11 +296,12 @@ body::before {
     }
     
     .reel::before {
-        /* 데스크톱에서는 50px 높이 기준으로 뷰포트 설정 */
-        top: 50px;
+        /* 데스크톱: 릴 높이 150px에서 중앙 50px 심볼 영역 */
+        top: calc(50% - 25px); /* 정확한 중앙 계산 */
         height: 50px;
-        left: 2px;
-        right: 2px;
+        left: 3px;
+        right: 3px;
+        border-radius: 8px;
     }
     
     .symbol-stream {
@@ -844,23 +850,51 @@ body::before {
     }
 }
 
-@media (max-width: 480px) {
+/* 아이폰 SE, 갤럭시 폴드 등 소형 기기 */
+@media (max-width: 380px) {
     .container {
-        padding: 10px;
+        padding: 8px;
     }
     
     .reel-container {
-        gap: 0; /* 아주 작은 화면에서도 간격 없음 */
+        padding: 0 2px;
         min-width: 240px;
     }
     
     .reel {
-        width: 80px; /* 작은 화면에 맞게 조정 */
-        height: 105px;
+        width: min(75px, calc((100vw - 40px) / 3));
+        height: 105px; /* 35px * 3 = 105px */
+        min-width: 70px;
+    }
+    
+    .reel::before {
+        top: calc(50% - 17.5px); /* 35px 높이의 절반 */
+        height: 35px;
+        left: 2px;
+        right: 2px;
+        border-radius: 4px;
     }
     
     .symbol {
         height: 35px;
         font-size: 1.2rem;
+    }
+}
+
+/* 아이폰 12 mini, 갤럭시 S 시리즈 등 중간 크기 */
+@media (min-width: 381px) and (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .reel {
+        width: min(85px, calc((100vw - 50px) / 3));
+        height: 120px;
+        min-width: 75px;
+    }
+    
+    .symbol {
+        height: 40px;
+        font-size: 1.4rem;
     }
 }

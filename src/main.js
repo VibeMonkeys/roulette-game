@@ -25,11 +25,29 @@ window.addEventListener('load', () => {
         const symbolIndex = symbols.indexOf(symbol);
         if (symbolIndex === -1) return;
         
-        const isMobile = window.innerWidth <= 768;
-        const symbolHeight = isMobile ? 40 : 50;
-        const reelHeight = isMobile ? 120 : 150;
-        const viewportCenter = reelHeight / 2;
+        // 더 정확한 기종별 크기 계산
+        const screenWidth = window.innerWidth;
+        let symbolHeight, reelHeight;
         
+        if (screenWidth <= 380) {
+            // 아이폰 SE, 갤럭시 폴드 등 소형
+            symbolHeight = 35;
+            reelHeight = 105;
+        } else if (screenWidth <= 480) {
+            // 아이폰 12 mini, 갤럭시 S 시리즈 등 중간
+            symbolHeight = 40;
+            reelHeight = 120;
+        } else if (screenWidth <= 768) {
+            // 일반 모바일
+            symbolHeight = 40;
+            reelHeight = 120;
+        } else {
+            // 데스크톱
+            symbolHeight = 50;
+            reelHeight = 150;
+        }
+        
+        const viewportCenter = reelHeight / 2;
         const symbolTop = symbolIndex * symbolHeight;
         const symbolCenter = symbolTop + (symbolHeight / 2);
         const offset = viewportCenter - symbolCenter;
@@ -121,9 +139,20 @@ window.addEventListener('load', () => {
                 const spinDuration = 1800 + reelIndex * 600;
                 const startTime = Date.now();
                 
-                const isMobile = window.innerWidth <= 768;
-                const symbolHeight = isMobile ? 40 : 50;
-                const reelHeight = isMobile ? 120 : 150;
+                // 정확한 기종별 크기 계산 (updateReelPosition과 동일)
+                const screenWidth = window.innerWidth;
+                let symbolHeight, reelHeight;
+                
+                if (screenWidth <= 380) {
+                    symbolHeight = 35; reelHeight = 105;
+                } else if (screenWidth <= 480) {
+                    symbolHeight = 40; reelHeight = 120;
+                } else if (screenWidth <= 768) {
+                    symbolHeight = 40; reelHeight = 120;
+                } else {
+                    symbolHeight = 50; reelHeight = 150;
+                }
+                
                 const viewportCenter = reelHeight / 2;
                 const totalSymbols = symbols.length;
                 const totalHeight = totalSymbols * symbolHeight;
