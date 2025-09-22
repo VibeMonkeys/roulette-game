@@ -4,7 +4,7 @@
 
 // 게임 로직
 window.addEventListener('load', () => {
-    const symbols = ['1', '2', '3', '4', '5', '6'];
+    const symbols = ['1', '2', '3', '4', '5', '6', '7'];
     
     // 화면 크기에 따른 심볼 높이와 뷰포트 위치 계산
     function getViewportSettings() {
@@ -23,7 +23,7 @@ window.addEventListener('load', () => {
     
     // 순환 구조를 동적으로 생성하는 함수
     function generateCircularSymbols(targetSymbol, totalVisible = 40) {
-        const baseSymbols = ['1', '2', '3', '4', '5', '6'];
+        const baseSymbols = ['1', '2', '3', '4', '5', '6', '7'];
         const targetIndex = baseSymbols.indexOf(targetSymbol);
         if (targetIndex === -1) return [];
         
@@ -55,17 +55,17 @@ window.addEventListener('load', () => {
         });
     }
     const prizes = {
-        '6': { rate: 0.01, message: '🎯 숫자 6 대박! 🎯' },
-        '5': { rate: 0.02, message: '⭐ 숫자 5 당첨! ⭐' },
-        '4': { rate: 0.03, message: '🔔 숫자 4 당첨! 🔔' },
-        '3': { rate: 0.04, message: '🍀 숫자 3 당첨! 🍀' }
+        '7': { rate: 0.005, message: '🏆 최고 상품 대박! 🏆', name: '🏆 최고 상품' },
+        '6': { rate: 0.01, message: '🎯 배민 2만원권 대박! 🎯', name: '🍕 배민 2만원권' },
+        '5': { rate: 0.02, message: '⭐ 스벅 2만원권 당첨! ⭐', name: '☕ 스벅 2만원권' },
+        '4': { rate: 0.03, message: '🔔 아메리카노 당첨! 🔔', name: '☕ 아메리카노' },
+        '3': { rate: 0.04, message: '🍀 다이어리 당첨! 🍀', name: '📔 다이어리' }
     };
     
     const spinBtn = document.getElementById('spinBtn');
     const reels = document.querySelectorAll('.reel');
     const resultMessage = document.getElementById('resultMessage');
     const prizeInfo = document.getElementById('prizeInfo');
-    const gameStatus = document.getElementById('gameStatus');
     
     function updateReelPosition(reel, symbol) {
         const symbolStream = reel.querySelector('.symbol-stream');
@@ -103,22 +103,22 @@ window.addEventListener('load', () => {
         
         spinBtn.addEventListener('click', async () => {
             spinBtn.disabled = true;
-            spinBtn.textContent = 'SPINNING...';
-            
+            spinBtn.textContent = '🔄 뽑는 중...';
+
             reels.forEach(reel => reel.classList.add('spinning'));
-            
+
             const result = determineResult();
             await animateReels(result.symbols);
-            
+
             reels.forEach(reel => reel.classList.remove('spinning'));
             showResult(result);
-            
+
             if (result.isWin) {
                 showWinLine();
             }
-            
+
             spinBtn.disabled = false;
-            spinBtn.textContent = 'SPIN';
+            spinBtn.textContent = '🎁 행운 뽑기';
             setTimeout(() => {
                 document.querySelectorAll('.symbol').forEach(symbol => {
                     symbol.classList.remove('winning-symbol', 'blinking');
@@ -303,16 +303,14 @@ window.addEventListener('load', () => {
                 resultMessage.textContent = result.prize.message;
                 resultMessage.className = 'result-message win';
             }
-            if (prizeInfo) prizeInfo.textContent = '축하합니다! 당첨되셨습니다!';
-            if (gameStatus) gameStatus.innerHTML = '<p>🎉 축하합니다! 당첨되셨습니다! 🎉</p>';
+            if (prizeInfo) prizeInfo.textContent = `축하합니다! ${result.prize.name} 당첨되셨습니다!`;
             setTimeout(() => triggerCelebrationAnimation(), 500);
         } else {
             if (resultMessage) {
-                resultMessage.textContent = '아쉽네요!';
+                resultMessage.textContent = '💔 꽝! 아쉽네요!';
                 resultMessage.className = 'result-message lose';
             }
-            if (prizeInfo) prizeInfo.textContent = '참여해주셔서 감사합니다!';
-            if (gameStatus) gameStatus.innerHTML = '<p>😢 아쉽네요! 참여해주셔서 감사합니다!</p>';
+            if (prizeInfo) prizeInfo.textContent = '꽝! 다음 기회에 도전해보세요!';
         }
     }
     
