@@ -4,12 +4,61 @@
 
 // 게임 로직
 window.addEventListener('load', () => {
-    const symbols = ['❌', '7', '🍒', '🍋', '⭐', '💎', '🔔'];
+    const symbols = ['1', '2', '3', '4', '5', '6'];
+    
+    // 화면 크기에 따른 심볼 높이와 뷰포트 위치 계산
+    function getViewportSettings() {
+        const screenWidth = window.innerWidth;
+        
+        if (screenWidth <= 360) {
+            return { symbolHeight: 35, viewportTop: 35 };
+        } else if (screenWidth <= 400) {
+            return { symbolHeight: 40, viewportTop: 40 };
+        } else if (screenWidth <= 768) {
+            return { symbolHeight: 40, viewportTop: 40 };
+        } else {
+            return { symbolHeight: 50, viewportTop: 50 };
+        }
+    }
+    
+    // 순환 구조를 동적으로 생성하는 함수
+    function generateCircularSymbols(targetSymbol, totalVisible = 40) {
+        const baseSymbols = ['1', '2', '3', '4', '5', '6'];
+        const targetIndex = baseSymbols.indexOf(targetSymbol);
+        if (targetIndex === -1) return [];
+        
+        const result = [];
+        const centerPosition = Math.floor(totalVisible / 2);
+        for (let i = 0; i < totalVisible; i++) {
+            const offset = i - centerPosition;
+            let symbolIndex = (targetIndex + offset) % baseSymbols.length;
+            if (symbolIndex < 0) symbolIndex += baseSymbols.length;
+            result.push(baseSymbols[symbolIndex]);
+        }
+        
+        return result;
+    }
+    
+    // 릴의 심볼 스트림을 동적으로 업데이트하는 함수
+    function updateReelSymbols(reel, targetSymbol) {
+        const symbolStream = reel.querySelector('.symbol-stream');
+        if (!symbolStream) return;
+        
+        const circularSymbols = generateCircularSymbols(targetSymbol);
+        symbolStream.innerHTML = '';
+        
+        circularSymbols.forEach(symbol => {
+            const symbolDiv = document.createElement('div');
+            symbolDiv.className = 'symbol';
+            symbolDiv.textContent = symbol;
+            symbolStream.appendChild(symbolDiv);
+        });
+    }
     const prizes = {
-        '💎': { rate: 0.01, message: '💎 다이아몬드 대박! 💎' },
-        '⭐': { rate: 0.02, message: '⭐ 별 당첨! ⭐' },
-        '🔔': { rate: 0.03, message: '🔔 벨 당첨! 🔔' },
-        '7': { rate: 0.04, message: '🍀 럭키 세븐! 🍀' }
+        '6': { rate: 0.01, message: '🎯 숫자 6 대박! 🎯' },
+        '5': { rate: 0.02, message: '⭐ 숫자 5 당첨! ⭐' },
+        '4': { rate: 0.03, message: '🔔 숫자 4 당첨! 🔔' },
+        '3': { rate: 0.04, message: '🍀 숫자 3 당첨! 🍀' }
     };
     
     const spinBtn = document.getElementById('spinBtn');
@@ -22,43 +71,19 @@ window.addEventListener('load', () => {
         const symbolStream = reel.querySelector('.symbol-stream');
         if (!symbolStream) return;
         
-        const symbolIndex = symbols.indexOf(symbol);
-        if (symbolIndex === -1) return;
+        updateReelSymbols(reel, symbol);
         
-        // 더 정확한 기종별 크기 계산
-        const screenWidth = window.innerWidth;
-        let symbolHeight, reelHeight;
-        
-        if (screenWidth <= 380) {
-            // 아이폰 SE, 갤럭시 폴드 등 소형
-            symbolHeight = 35;
-            reelHeight = 105;
-        } else if (screenWidth <= 480) {
-            // 아이폰 12 mini, 갤럭시 S 시리즈 등 중간
-            symbolHeight = 40;
-            reelHeight = 120;
-        } else if (screenWidth <= 768) {
-            // 일반 모바일
-            symbolHeight = 40;
-            reelHeight = 120;
-        } else {
-            // 데스크톱
-            symbolHeight = 50;
-            reelHeight = 150;
-        }
-        
-        const viewportCenter = reelHeight / 2;
-        const symbolTop = symbolIndex * symbolHeight;
-        const symbolCenter = symbolTop + (symbolHeight / 2);
-        const offset = viewportCenter - symbolCenter;
-        
+        const { symbolHeight, viewportTop } = getViewportSettings();
+        const centerIndex = 20;
+        const targetSymbolTop = centerIndex * symbolHeight;
+        const offset = viewportTop - targetSymbolTop;
         symbolStream.style.transform = `translateZ(0) translateY(${offset}px)`;
         symbolStream.style.transition = 'none';
     }
     
     if (spinBtn && reels.length === 3) {
         const setupInitialPositions = () => {
-            const initialSymbols = ['7', '7', '7'];
+            const initialSymbols = ['1', '1', '1'];
             let successCount = 0;
             
             reels.forEach((reel, index) => {
@@ -139,33 +164,16 @@ window.addEventListener('load', () => {
                 const spinDuration = 1800 + reelIndex * 600;
                 const startTime = Date.now();
                 
-                // 정확한 기종별 크기 계산 (updateReelPosition과 동일)
-                const screenWidth = window.innerWidth;
-                let symbolHeight, reelHeight;
-                
-                if (screenWidth <= 380) {
-                    symbolHeight = 35; reelHeight = 105;
-                } else if (screenWidth <= 480) {
-                    symbolHeight = 40; reelHeight = 120;
-                } else if (screenWidth <= 768) {
-                    symbolHeight = 40; reelHeight = 120;
-                } else {
-                    symbolHeight = 50; reelHeight = 150;
-                }
-                
-                const viewportCenter = reelHeight / 2;
-                const totalSymbols = symbols.length;
+                const { symbolHeight, viewportTop } = getViewportSettings();
+                const totalSymbols = 40;
                 const totalHeight = totalSymbols * symbolHeight;
                 
-                const finalIndex = symbols.indexOf(finalSymbol);
-                const finalSymbolTop = finalIndex * symbolHeight;
-                const finalSymbolCenter = finalSymbolTop + (symbolHeight / 2);
-                const finalOffset = viewportCenter - finalSymbolCenter;
+                updateReelSymbols(reel, finalSymbol);
                 
-                const initial7Index = 1;
-                const initial7Top = initial7Index * symbolHeight;
-                const initial7Center = initial7Top + (symbolHeight / 2);
-                const initialOffset = viewportCenter - initial7Center;
+                const centerIndex = 20;
+                const finalSymbolTop = centerIndex * symbolHeight;
+                const finalOffset = viewportTop - finalSymbolTop;
+                const initialOffset = finalOffset;
                 let currentOffset = initialOffset;
                 
                 const animate = () => {
@@ -300,10 +308,10 @@ window.addEventListener('load', () => {
             setTimeout(() => triggerCelebrationAnimation(), 500);
         } else {
             if (resultMessage) {
-                resultMessage.textContent = '아쉽네요! 다음 기회에~';
+                resultMessage.textContent = '아쉽네요!';
                 resultMessage.className = 'result-message lose';
             }
-            if (prizeInfo) prizeInfo.textContent = '꽝! 하지만 참여해주셔서 감사합니다!';
+            if (prizeInfo) prizeInfo.textContent = '참여해주셔서 감사합니다!';
             if (gameStatus) gameStatus.innerHTML = '<p>😢 아쉽네요! 참여해주셔서 감사합니다!</p>';
         }
     }
