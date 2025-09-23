@@ -429,10 +429,3 @@ window.addEventListener('load', () => {
     }
 });
 
-window.addEventListener('error', (event) => {
-    console.error('오류 발생:', event.error);
-});
-
-window.addEventListener('unhandledrejection', (event) => {
-    console.error('처리되지 않은 Promise 오류:', event.reason);
-});
