@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Cute+Font&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&family=Gugi&family=Poor+Story&family=Gaegu:wght@300;400;700&family=Kirang+Haerang&display=swap');
 
 :root {
     --warm-cream: #f5f1e8;
@@ -22,7 +22,7 @@
 }
 
 body {
-    font-family: 'Nanum Gothic', sans-serif;
+    font-family: 'Jua', 'Gaegu', cursive;
     background: linear-gradient(135deg, var(--warm-cream) 0%, var(--soft-beige) 100%);
     color: var(--deep-brown);
     min-height: 100vh;
@@ -82,23 +82,37 @@ body::before {
 }
 
 .title {
-    font-family: 'Cute Font', cursive;
-    font-size: 3rem;
-    font-weight: 800;
+    font-family: 'Black Han Sans', sans-serif;
+    font-size: 2.6rem;
+    font-weight: 400;
     color: var(--vintage-gold);
-    text-shadow: 
+    text-shadow:
         2px 2px 4px rgba(139, 115, 85, 0.3),
         0px 0px 8px rgba(212, 175, 55, 0.4);
     margin-bottom: 10px;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+    text-align: center;
+    font-variant-numeric: lining-nums;
+    font-feature-settings: "kern" 1;
+}
+
+.number-fix {
+    font-family: 'Black Han Sans', sans-serif;
+    display: inline;
+    vertical-align: baseline;
+    font-variant-numeric: lining-nums;
 }
 
 .subtitle {
-    font-size: 1.2rem;
+    font-family: 'Gaegu', 'Poor Story', cursive;
+    font-size: 1.6rem;
     color: var(--warm-brown);
     text-shadow: 1px 1px 2px rgba(139, 115, 85, 0.2);
     letter-spacing: 2px;
     font-weight: 400;
+    line-height: 1.1;
 }
 
 
@@ -300,8 +314,9 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-family: 'Black Han Sans', 'Gugi', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 400;
     border-bottom: 1px solid var(--warm-brown);
     background: linear-gradient(180deg, var(--warm-cream) 0%, var(--soft-beige) 100%);
     text-shadow: 1px 1px 2px rgba(139, 115, 85, 0.3);
@@ -311,7 +326,7 @@ body::before {
 @media (min-width: 769px) {
     .symbol {
         height: 50px;
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
 }
 
@@ -551,9 +566,9 @@ body::before {
     border: 3px solid var(--warm-brown);
     border-radius: 40px;
     color: var(--deep-brown);
-    font-family: 'Nanum Gothic', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 800;
+    font-family: 'Jua', 'Kirang Haerang', cursive;
+    font-size: 1.4rem;
+    font-weight: 400;
     cursor: pointer;
     position: relative;
     margin: 0 auto;
@@ -601,9 +616,9 @@ body::before {
 }
 
 .result-message {
-    font-family: 'Cute Font', cursive;
-    font-size: 2rem;
-    font-weight: 800;
+    font-family: 'Jua', 'Kirang Haerang', cursive;
+    font-size: 2.5rem;
+    font-weight: 400;
     margin-bottom: 10px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -660,8 +675,8 @@ body::before {
     color: var(--vintage-gold);
     margin-bottom: 15px;
     text-shadow: 1px 1px 2px rgba(139, 115, 85, 0.3);
-    font-family: 'Cute Font', cursive;
-    font-size: 1.3rem;
+    font-family: 'Jua', 'Black Han Sans', sans-serif;
+    font-size: 1.8rem;
 }
 
 .prize-list {
@@ -815,7 +830,8 @@ body::before {
 /* 일반 모바일 기기 */
 @media (min-width: 401px) and (max-width: 768px) {
     .title {
-        font-size: 2rem;
+        font-size: 2.2rem;
+        line-height: 1.2;
     }
     
     .subtitle {
@@ -902,7 +918,7 @@ body::before {
     
     .symbol {
         height: 35px;
-        font-size: 1.2rem;
+        font-size: 1rem;
     }
 }
 
@@ -928,6 +944,6 @@ body::before {
 
     .symbol {
         height: 40px;
-        font-size: 1.4rem;
+        font-size: 1.2rem;
     }
 }
