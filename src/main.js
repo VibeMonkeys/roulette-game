@@ -4,7 +4,9 @@
 
 // 게임 로직
 window.addEventListener('load', () => {
-    const symbols = ['1', '2', '3', '4', '5', '6', '7'];
+    const loseSymbols = ['꽝', '꽝'];  // 꽝 전용 심볼
+    const winSymbols = ['3', '4', '5', '6', '7'];  // 당첨 전용 심볼
+    const allSymbols = [...loseSymbols, ...winSymbols];  // 릴 표시용
     
     // 화면 크기에 따른 심볼 높이와 뷰포트 위치 계산
     function getViewportSettings() {
@@ -23,19 +25,18 @@ window.addEventListener('load', () => {
     
     // 순환 구조를 동적으로 생성하는 함수
     function generateCircularSymbols(targetSymbol, totalVisible = 40) {
-        const baseSymbols = ['1', '2', '3', '4', '5', '6', '7'];
-        const targetIndex = baseSymbols.indexOf(targetSymbol);
+        const targetIndex = allSymbols.indexOf(targetSymbol);
         if (targetIndex === -1) return [];
-        
+
         const result = [];
         const centerPosition = Math.floor(totalVisible / 2);
         for (let i = 0; i < totalVisible; i++) {
             const offset = i - centerPosition;
-            let symbolIndex = (targetIndex + offset) % baseSymbols.length;
-            if (symbolIndex < 0) symbolIndex += baseSymbols.length;
-            result.push(baseSymbols[symbolIndex]);
+            let symbolIndex = (targetIndex + offset) % allSymbols.length;
+            if (symbolIndex < 0) symbolIndex += allSymbols.length;
+            result.push(allSymbols[symbolIndex]);
         }
-        
+
         return result;
     }
     
@@ -83,7 +84,7 @@ window.addEventListener('load', () => {
     
     if (spinBtn && reels.length === 3) {
         const setupInitialPositions = () => {
-            const initialSymbols = ['1', '1', '1'];
+            const initialSymbols = ['꽝', '꽝', '꽝'];
             let successCount = 0;
             
             reels.forEach((reel, index) => {
@@ -145,9 +146,9 @@ window.addEventListener('load', () => {
         return {
             isWin: false,
             symbols: [
-                symbols[Math.floor(Math.random() * symbols.length)],
-                symbols[Math.floor(Math.random() * symbols.length)],
-                symbols[Math.floor(Math.random() * symbols.length)]
+                loseSymbols[Math.floor(Math.random() * loseSymbols.length)],
+                loseSymbols[Math.floor(Math.random() * loseSymbols.length)],
+                loseSymbols[Math.floor(Math.random() * loseSymbols.length)]
             ]
         };
     }
@@ -267,23 +268,21 @@ window.addEventListener('load', () => {
     function highlightWinningSymbol(reel, winningSymbol) {
         const symbolStream = reel.querySelector('.symbol-stream');
         if (!symbolStream) return;
-        
-        const allSymbols = symbolStream.querySelectorAll('.symbol');
-        allSymbols.forEach(symbol => {
+
+        const allSymbolElements = symbolStream.querySelectorAll('.symbol');
+        allSymbolElements.forEach(symbol => {
             symbol.classList.remove('winning-symbol', 'blinking');
         });
-        
-        const winningIndex = symbols.indexOf(winningSymbol);
-        if (winningIndex !== -1) {
-            const targetSymbol = allSymbols[winningIndex];
-            if (targetSymbol) {
-                targetSymbol.classList.add('winning-symbol');
-                setTimeout(() => {
-                    if (targetSymbol) {
-                        targetSymbol.classList.add('blinking');
-                    }
-                }, 500);
-            }
+
+        // 중앙에 표시된 심볼 찾기 (20번째 인덱스)
+        const centerSymbolElement = allSymbolElements[20];
+        if (centerSymbolElement && centerSymbolElement.textContent === winningSymbol) {
+            centerSymbolElement.classList.add('winning-symbol');
+            setTimeout(() => {
+                if (centerSymbolElement) {
+                    centerSymbolElement.classList.add('blinking');
+                }
+            }, 500);
         }
     }
     
