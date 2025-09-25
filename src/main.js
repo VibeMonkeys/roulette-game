@@ -64,6 +64,14 @@ window.addEventListener('load', () => {
             const status = snapshot.val();
             if (status && status.ended) {
                 showGameEndedMessage();
+                // 게임 종료 시 버튼도 비활성화
+                const spinBtn = document.getElementById('spinBtn');
+                if (spinBtn && !isWinner) {
+                    spinBtn.disabled = true;
+                    spinBtn.textContent = '🙏 이벤트 종료';
+                    spinBtn.style.opacity = '0.5';
+                    spinBtn.style.cursor = 'not-allowed';
+                }
             }
         });
     }
@@ -233,11 +241,21 @@ window.addEventListener('load', () => {
             });
 
             if (successCount < 3) {
-                setTimeout(setupInitialPositions, 50);
+                setTimeout(setupInitialPositions, 100);
+            } else {
+                // 초기 위치 설정 완료 후 화면 안정화
+                setTimeout(() => {
+                    reels.forEach((reel, index) => {
+                        updateReelPosition(reel, initialSymbols[index]);
+                    });
+                }, 200);
             }
         };
 
+        // 페이지 로드 시 여러 번 초기화로 안정성 확보
         setupInitialPositions();
+        setTimeout(setupInitialPositions, 500);
+        setTimeout(setupInitialPositions, 1000);
         
         spinBtn.addEventListener('click', async () => {
             // 테스트를 위해 1회 제한 임시 해제
