@@ -4,9 +4,38 @@
 
 // 게임 로직
 window.addEventListener('load', () => {
-    const loseSymbols = ['꽝', '꽝'];  // 꽝 전용 심볼
-    const winSymbols = ['3', '4', '5', '6', '7'];  // 당첨 전용 심볼
-    const allSymbols = [...loseSymbols, ...winSymbols];  // 릴 표시용
+    const GAME_PLAYED_KEY = 'hunet26_game_played';
+
+    // 게임 플레이 여부 확인
+    function hasPlayedBefore() {
+        return localStorage.getItem(GAME_PLAYED_KEY) === 'true';
+    }
+
+    // 게임 플레이 기록 저장
+    function markAsPlayed() {
+        localStorage.setItem(GAME_PLAYED_KEY, 'true');
+        localStorage.setItem('hunet26_play_date', new Date().toISOString());
+    }
+
+    // 이미 플레이한 사용자 처리
+    function showAlreadyPlayedMessage() {
+        const spinBtn = document.getElementById('spinBtn');
+        const resultMessage = document.getElementById('resultMessage');
+
+        if (spinBtn) {
+            spinBtn.disabled = true;
+            spinBtn.textContent = '❌ 이미 참여완료';
+            spinBtn.style.opacity = '0.5';
+            spinBtn.style.cursor = 'not-allowed';
+        }
+
+        if (resultMessage) {
+            resultMessage.innerHTML = '이미 이벤트에 참여하셨습니다!<br>한 분당 1회만 참여 가능합니다 😊';
+            resultMessage.className = 'result-message';
+        }
+    }
+
+    const allSymbols = ['0', '1', '2', '3', '4', '5', '6'];  // 릴 표시용 (0~6 숫자)
     
     // 화면 크기에 따른 심볼 높이와 뷰포트 위치 계산
     function getViewportSettings() {
@@ -56,11 +85,7 @@ window.addEventListener('load', () => {
         });
     }
     const prizes = {
-        '7': { rate: 0.005, message: '🏆 최고 상품 대박! 🏆', name: '🏆 최고 상품' },
-        '6': { rate: 0.01, message: '🎯 배민 2만원권 대박! 🎯', name: '🍕 배민 2만원권' },
-        '5': { rate: 0.02, message: '⭐ 스벅 2만원권 당첨! ⭐', name: '☕ 스벅 2만원권' },
-        '4': { rate: 0.03, message: '🔔 아메리카노 당첨! 🔔', name: '☕ 아메리카노' },
-        '3': { rate: 0.04, message: '🍀 다이어리 당첨! 🍀', name: '📔 다이어리' }
+        '026': { message: '짠! 축하합니다! 당신이 바로 ★행운의 26명★입니다. 현장에서 특별한 선물을 받아가세요!' }
     };
     
     const spinBtn = document.getElementById('spinBtn');
@@ -83,10 +108,15 @@ window.addEventListener('load', () => {
     }
     
     if (spinBtn && reels.length === 3) {
+        // 페이지 로드 시 이미 플레이 여부 확인
+        if (hasPlayedBefore()) {
+            showAlreadyPlayedMessage();
+        }
+
         const setupInitialPositions = () => {
-            const initialSymbols = ['꽝', '꽝', '꽝'];
+            const initialSymbols = ['0', '2', '6'];  // 026 조합으로 초기 설정
             let successCount = 0;
-            
+
             reels.forEach((reel, index) => {
                 const symbolStream = reel.querySelector('.symbol-stream');
                 if (symbolStream) {
@@ -94,15 +124,21 @@ window.addEventListener('load', () => {
                     successCount++;
                 }
             });
-            
+
             if (successCount < 3) {
                 setTimeout(setupInitialPositions, 50);
             }
         };
-        
+
         setupInitialPositions();
         
         spinBtn.addEventListener('click', async () => {
+            // 이미 플레이한 경우 차단
+            if (hasPlayedBefore()) {
+                showAlreadyPlayedMessage();
+                return;
+            }
+
             spinBtn.disabled = true;
             spinBtn.textContent = '🔄 뽑는 중...';
 
@@ -118,8 +154,15 @@ window.addEventListener('load', () => {
                 showWinLine();
             }
 
-            spinBtn.disabled = false;
-            spinBtn.textContent = '🎁 행운 뽑기';
+            // 게임 완료 후 플레이 기록 저장
+            markAsPlayed();
+
+            // 버튼 비활성화 및 텍스트 변경
+            spinBtn.disabled = true;
+            spinBtn.textContent = '참여 완료';
+            spinBtn.style.opacity = '0.5';
+            spinBtn.style.cursor = 'not-allowed';
+
             setTimeout(() => {
                 document.querySelectorAll('.symbol').forEach(symbol => {
                     symbol.classList.remove('winning-symbol', 'blinking');
@@ -130,27 +173,27 @@ window.addEventListener('load', () => {
     
     function determineResult() {
         const random = Math.random();
-        let cumulativeRate = 0;
-        
-        for (const [symbol, config] of Object.entries(prizes)) {
-            cumulativeRate += config.rate;
-            if (random < cumulativeRate) {
-                return {
-                    isWin: true,
-                    symbols: [symbol, symbol, symbol],
-                    prize: config
-                };
-            }
+
+        // 첫 번째, 두 번째 릴은 항상 0, 2로 고정
+        // 세 번째 릴만 랜덤 (6.5% 확률로 6, 나머지는 다른 숫자)
+        let thirdReel;
+        if (random < 0.065) {
+            // 당첨: 세 번째 릴이 6
+            thirdReel = '6';
+            return {
+                isWin: true,
+                symbols: ['0', '2', '6'],  // 0-2-6 당첨!
+                prize: prizes['026']
+            };
+        } else {
+            // 꽝: 세 번째 릴이 0,1,2,3,4,5 중 하나
+            const loseNumbers = ['0', '1', '2', '3', '4', '5'];
+            thirdReel = loseNumbers[Math.floor(Math.random() * loseNumbers.length)];
+            return {
+                isWin: false,
+                symbols: ['0', '2', thirdReel]  // 0-2-X (X는 6이 아닌 숫자)
+            };
         }
-        
-        return {
-            isWin: false,
-            symbols: [
-                loseSymbols[Math.floor(Math.random() * loseSymbols.length)],
-                loseSymbols[Math.floor(Math.random() * loseSymbols.length)],
-                loseSymbols[Math.floor(Math.random() * loseSymbols.length)]
-            ]
-        };
     }
     
     async function animateReels(finalSymbols) {
@@ -214,7 +257,6 @@ window.addEventListener('load', () => {
                         const stopStartTime = Date.now();
                         const stopStartOffset = currentOffset;
                         
-                        let animationId;
                         const smoothStop = () => {
                             const stopElapsed = Date.now() - stopStartTime;
                             const stopProgress = Math.min(stopElapsed / smoothStopDuration, 1);
@@ -228,7 +270,7 @@ window.addEventListener('load', () => {
                                 const interpolatedOffset = stopStartOffset + (bestOffset - stopStartOffset) * finalEase;
                                 
                                 symbolStream.style.transform = `translateY(${interpolatedOffset}px)`;
-                                animationId = requestAnimationFrame(smoothStop);
+                                requestAnimationFrame(smoothStop);
                             } else {
                                 symbolStream.style.transform = `translateY(${bestOffset}px)`;
                                 highlightWinningSymbol(reel, finalSymbol);
@@ -236,7 +278,7 @@ window.addEventListener('load', () => {
                             }
                         };
                         
-                        animationId = requestAnimationFrame(smoothStop);
+                        requestAnimationFrame(smoothStop);
                     }
                 };
                 
@@ -302,19 +344,18 @@ window.addEventListener('load', () => {
                 resultMessage.textContent = result.prize.message;
                 resultMessage.className = 'result-message win';
             }
-            if (prizeInfo) prizeInfo.textContent = `축하합니다! ${result.prize.name} 당첨되셨습니다!`;
+            if (prizeInfo) prizeInfo.textContent = '';
             setTimeout(() => triggerCelebrationAnimation(), 500);
         } else {
             if (resultMessage) {
-                resultMessage.textContent = '💔 꽝! 아쉽네요!';
+                resultMessage.innerHTML = '이번엔 꽝😭<br>창립 26주년 함께해주셔서 감사합니다~';
                 resultMessage.className = 'result-message lose';
             }
-            if (prizeInfo) prizeInfo.textContent = '꽝! 다음 기회에 도전해보세요!';
+            if (prizeInfo) prizeInfo.textContent = '';
         }
     }
     
     function triggerCelebrationAnimation() {
-        
         const slotMachine = document.getElementById('slotMachine');
         const slotSparkle = document.getElementById('slotSparkle');
         
@@ -427,4 +468,3 @@ window.addEventListener('load', () => {
         }
     }
 });
-
