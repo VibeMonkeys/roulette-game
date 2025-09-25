@@ -528,6 +528,15 @@ window.addEventListener('load', () => {
             if (prizeInfo) prizeInfo.textContent = '';
             setTimeout(() => triggerCelebrationAnimation(), 500);
 
+            // 당첨자도 버튼 비활성화 (더 이상 플레이 불가)
+            const spinBtn = document.getElementById('spinBtn');
+            if (spinBtn) {
+                spinBtn.disabled = true;
+                spinBtn.textContent = '🎉 당첨 완료';
+                spinBtn.style.opacity = '0.5';
+                spinBtn.style.cursor = 'not-allowed';
+            }
+
             // 즉시 Firebase에 저장하여 다른 사용자들에게 게임 종료 알림
             saveWinner();
 
