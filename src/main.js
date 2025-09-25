@@ -108,10 +108,10 @@ window.addEventListener('load', () => {
     }
     
     if (spinBtn && reels.length === 3) {
-        // 페이지 로드 시 이미 플레이 여부 확인
-        if (hasPlayedBefore()) {
-            showAlreadyPlayedMessage();
-        }
+        // 테스트를 위해 1회 제한 임시 해제
+        // if (hasPlayedBefore()) {
+        //     showAlreadyPlayedMessage();
+        // }
 
         const setupInitialPositions = () => {
             const initialSymbols = ['0', '2', '6'];  // 026 조합으로 초기 설정
@@ -133,11 +133,11 @@ window.addEventListener('load', () => {
         setupInitialPositions();
         
         spinBtn.addEventListener('click', async () => {
-            // 이미 플레이한 경우 차단
-            if (hasPlayedBefore()) {
-                showAlreadyPlayedMessage();
-                return;
-            }
+            // 테스트를 위해 1회 제한 임시 해제
+            // if (hasPlayedBefore()) {
+            //     showAlreadyPlayedMessage();
+            //     return;
+            // }
 
             spinBtn.disabled = true;
             spinBtn.textContent = '🔄 뽑는 중...';
@@ -154,14 +154,14 @@ window.addEventListener('load', () => {
                 showWinLine();
             }
 
-            // 게임 완료 후 플레이 기록 저장
-            markAsPlayed();
+            // 테스트를 위해 1회 제한 임시 해제
+            // markAsPlayed();
 
-            // 버튼 비활성화 및 텍스트 변경
-            spinBtn.disabled = true;
-            spinBtn.textContent = '참여 완료';
-            spinBtn.style.opacity = '0.5';
-            spinBtn.style.cursor = 'not-allowed';
+            // 계속 플레이 가능하도록 버튼 복구
+            spinBtn.disabled = false;
+            spinBtn.textContent = '🎁 행운 뽑기';
+            spinBtn.style.opacity = '1';
+            spinBtn.style.cursor = 'pointer';
 
             setTimeout(() => {
                 document.querySelectorAll('.symbol').forEach(symbol => {
@@ -205,7 +205,10 @@ window.addEventListener('load', () => {
                     return;
                 }
                 
-                const spinDuration = 1800 + reelIndex * 600;
+                // 릴별로 더 큰 차이를 두어 긴장감 조성
+                const spinDuration = reelIndex === 0 ? 2000 :
+                                   reelIndex === 1 ? 3200 :
+                                   5500; // 마지막 릴은 훨씬 길게
                 const startTime = Date.now();
                 
                 const { symbolHeight, viewportTop } = getViewportSettings();
@@ -253,7 +256,10 @@ window.addEventListener('load', () => {
                         }
                         
                         const distance = Math.abs(bestOffset - currentOffset);
-                        const smoothStopDuration = Math.max(250, Math.min(500, distance * 1.5));
+                        // 마지막 릴은 훨씬 더 길고 부드러운 정지 (아슬아슬하게)
+                        const smoothStopDuration = reelIndex === 2 ?
+                            Math.max(1200, Math.min(2500, distance * 5)) :
+                            Math.max(250, Math.min(500, distance * 1.5));
                         const stopStartTime = Date.now();
                         const stopStartOffset = currentOffset;
                         
@@ -262,10 +268,21 @@ window.addEventListener('load', () => {
                             const stopProgress = Math.min(stopElapsed / smoothStopDuration, 1);
                             
                             if (stopProgress < 1) {
-                                const easeOut1 = 1 - Math.pow(2, -8 * stopProgress);
-                                const easeOut2 = 1 - Math.pow(1 - stopProgress, 4);
-                                const easeOut3 = stopProgress * (2 - stopProgress);
-                                const finalEase = (easeOut1 * 0.4 + easeOut2 * 0.4 + easeOut3 * 0.2);
+                                // 마지막 릴은 더 부드러운 이징 함수 사용
+                                let finalEase;
+                                if (reelIndex === 2) {
+                                    // 극도로 부드러운 감속 곡선 (숫자 하나씩 느끼게)
+                                    const easeOut1 = 1 - Math.pow(2, -4 * stopProgress);
+                                    const easeOut2 = 1 - Math.pow(1 - stopProgress, 8);
+                                    const easeOut3 = Math.sin((stopProgress * Math.PI) / 2);
+                                    finalEase = (easeOut1 * 0.2 + easeOut2 * 0.6 + easeOut3 * 0.2);
+                                } else {
+                                    // 기존 이징
+                                    const easeOut1 = 1 - Math.pow(2, -8 * stopProgress);
+                                    const easeOut2 = 1 - Math.pow(1 - stopProgress, 4);
+                                    const easeOut3 = stopProgress * (2 - stopProgress);
+                                    finalEase = (easeOut1 * 0.4 + easeOut2 * 0.4 + easeOut3 * 0.2);
+                                }
                                 
                                 const interpolatedOffset = stopStartOffset + (bestOffset - stopStartOffset) * finalEase;
                                 
@@ -283,15 +300,68 @@ window.addEventListener('load', () => {
                 };
                 
                 function calculateSpinSpeed(progress) {
-                    if (progress < 0.1) {
-                        const easeProgress = progress / 0.1;
-                        return Math.pow(easeProgress, 0.5) * 28;
-                    } else if (progress < 0.75) {
-                        return 28;
+                    // 3번째 릴(마지막)은 2번째 릴이 끝나는 시점부터 변화
+                    if (reelIndex === 2) {
+                        const secondReelEndPoint = 3200 / spinDuration; // 2번째 릴이 끝나는 비율
+
+                        if (progress < secondReelEndPoint) {
+                            // 2번째 릴이 끝날 때까지는 일반 속도
+                            if (progress < 0.1) {
+                                const easeProgress = progress / 0.1;
+                                return Math.pow(easeProgress, 0.5) * 30;
+                            } else {
+                                return 30;
+                            }
+                        } else {
+                            // 2번째 릴이 끝난 후부터 극적 변화!
+                            const dramticProgress = (progress - secondReelEndPoint) / (1 - secondReelEndPoint);
+
+                            if (dramticProgress < 0.3) {
+                                // 갑자기 빨라짐!
+                                const accelerationProgress = dramticProgress / 0.3;
+                                return 30 + (accelerationProgress * 20); // 30 → 50
+                            } else if (dramticProgress < 0.7) {
+                                // 고속 유지
+                                return 50;
+                            } else if (dramticProgress < 0.8) {
+                                // 1차 감속 (여전히 빠름)
+                                const slowProgress = (dramticProgress - 0.7) / 0.1;
+                                return 50 - (slowProgress * 25); // 50 → 25
+                            } else if (dramticProgress < 0.95) {
+                                // 2차 감속 (숫자가 보이기 시작)
+                                const slowProgress = (dramticProgress - 0.8) / 0.15;
+                                return 25 - (slowProgress * 18); // 25 → 7
+                            } else {
+                                // 극적인 마지막 구간 (숫자 하나씩 천천히)
+                                const finalProgress = (dramticProgress - 0.95) / 0.05;
+                                const easeOut = 1 - Math.pow(finalProgress, 6);
+                                return Math.max(7 * easeOut, 0.2);
+                            }
+                        }
+                    } else if (reelIndex === 1) {
+                        // 2번째 릴도 더 드라마틱하게
+                        if (progress < 0.1) {
+                            const easeProgress = progress / 0.1;
+                            return Math.pow(easeProgress, 0.5) * 35;
+                        } else if (progress < 0.7) {
+                            return 35;
+                        } else {
+                            const decelProgress = (progress - 0.7) / 0.3;
+                            const easeOut = 1 - Math.pow(decelProgress, 3.2);
+                            return Math.max(35 * easeOut, 0.6);
+                        }
                     } else {
-                        const decelProgress = (progress - 0.75) / 0.25;
-                        const easeOut = 1 - Math.pow(decelProgress, 2.8);
-                        return Math.max(28 * easeOut, 0.8);
+                        // 1번째 릴 (가장 빠르게 정지)
+                        if (progress < 0.1) {
+                            const easeProgress = progress / 0.1;
+                            return Math.pow(easeProgress, 0.5) * 30;
+                        } else if (progress < 0.75) {
+                            return 30;
+                        } else {
+                            const decelProgress = (progress - 0.75) / 0.25;
+                            const easeOut = 1 - Math.pow(decelProgress, 2.5);
+                            return Math.max(30 * easeOut, 0.8);
+                        }
                     }
                 }
                 
