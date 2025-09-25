@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Balloon -->
+  <ellipse cx="100" cy="120" rx="50" ry="60" fill="#FF8C42" stroke="#4A1A4A" stroke-width="3"/>
+  <ellipse cx="100" cy="110" rx="15" ry="20" fill="#FFB366" opacity="0.7"/>
+
+  <!-- Balloon string -->
+  <line x1="100" y1="180" x2="100" y2="220" stroke="#4A1A4A" stroke-width="2"/>
+
+  <!-- Number 6 -->
+  <text x="100" y="135" font-family="Arial, sans-serif" font-size="45" font-weight="bold" fill="#4A1A4A" text-anchor="middle">6</text>
+
+  <!-- Character body -->
+  <ellipse cx="100" cy="250" rx="35" ry="30" fill="#6BB6FF" stroke="#4A1A4A" stroke-width="3"/>
+
+  <!-- Character head -->
+  <circle cx="100" cy="210" r="20" fill="#6BB6FF" stroke="#4A1A4A" stroke-width="3"/>
+
+  <!-- Party hat -->
+  <polygon points="100,190 85,175 115,175" fill="#FFD700" stroke="#4A1A4A" stroke-width="2"/>
+  <circle cx="100" cy="175" r="3" fill="#FF6B9D"/>
+
+  <!-- Eyes (closed/happy) -->
+  <path d="M 90 203 Q 95 208 100 203" stroke="#4A1A4A" stroke-width="2" fill="none"/>
+  <path d="M 100 203 Q 105 208 110 203" stroke="#4A1A4A" stroke-width="2" fill="none"/>
+
+  <!-- Mouth (big smile) -->
+  <path d="M 88 215 Q 100 228 112 215" stroke="#4A1A4A" stroke-width="2" fill="#FF6B9D"/>
+
+  <!-- Arms (raised up in celebration) -->
+  <ellipse cx="75" cy="235" rx="8" ry="15" fill="#6BB6FF" stroke="#4A1A4A" stroke-width="2" transform="rotate(-45 75 235)"/>
+  <ellipse cx="125" cy="235" rx="8" ry="15" fill="#6BB6FF" stroke="#4A1A4A" stroke-width="2" transform="rotate(45 125 235)"/>
+
+  <!-- Shadow -->
+  <ellipse cx="100" cy="285" rx="25" ry="5" fill="#000" opacity="0.2"/>
+</svg>
