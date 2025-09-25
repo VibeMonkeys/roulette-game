@@ -51,7 +51,7 @@ window.addEventListener('load', () => {
     }
 
     const allSymbols = ['0', '1', '2', '3', '4', '5', '6'];  // 릴 표시용 (0~6 숫자)
-    const MAX_WINNERS = 2;  // 테스트용: 2명 당첨 시 게임 종료
+    const MAX_WINNERS = 26;  // 26명 당첨 시 게임 종료
     let isWinner = false;  // 현재 사용자가 당첨자인지 확인하는 플래그
 
     // Firebase 데이터베이스 참조
@@ -122,7 +122,7 @@ window.addEventListener('load', () => {
         }
 
         if (resultMessage) {
-            resultMessage.innerHTML = '🙏🏻 이벤트 종료<br>휴넷 창립 26주년 ★행운의 26명★이 모두 선정되었습니다!<br>함께 축하해 주셔서 감사합니다.';
+            resultMessage.innerHTML = '🙏🏻 이벤트 종료<br>휴넷 창립 26주년<br>★행운의 26명★이 모두 선정되었습니다!<br>함께 축하해 주셔서 감사합니다.';
             resultMessage.className = 'result-message';
         }
 
@@ -170,14 +170,17 @@ window.addEventListener('load', () => {
     // 순환 구조를 동적으로 생성하는 함수
     function generateCircularSymbols(targetSymbol, totalVisible = 40) {
         const targetIndex = allSymbols.indexOf(targetSymbol);
-        if (targetIndex === -1) return [];
+        if (targetIndex === -1) {
+            return [];
+        }
 
         const result = [];
-        const centerPosition = Math.floor(totalVisible / 2);
+        const centerPosition = 20; // 고정된 중앙 위치 (20번째 인덱스)
+
+        // 중앙에 목표 심볼이 정확히 오도록 배치
         for (let i = 0; i < totalVisible; i++) {
             const offset = i - centerPosition;
-            let symbolIndex = (targetIndex + offset) % allSymbols.length;
-            if (symbolIndex < 0) symbolIndex += allSymbols.length;
+            let symbolIndex = (targetIndex - offset + allSymbols.length * 10) % allSymbols.length;
             result.push(allSymbols[symbolIndex]);
         }
 
@@ -188,11 +191,11 @@ window.addEventListener('load', () => {
     function updateReelSymbols(reel, targetSymbol) {
         const symbolStream = reel.querySelector('.symbol-stream');
         if (!symbolStream) return;
-        
+
         const circularSymbols = generateCircularSymbols(targetSymbol);
         symbolStream.innerHTML = '';
-        
-        circularSymbols.forEach(symbol => {
+
+        circularSymbols.forEach((symbol, index) => {
             const symbolDiv = document.createElement('div');
             symbolDiv.className = 'symbol';
             symbolDiv.textContent = symbol;
@@ -200,7 +203,7 @@ window.addEventListener('load', () => {
         });
     }
     const prizes = {
-        '026': { message: '짠! 축하합니다! 당신이 바로 ★행운의 26명★입니다. 현장에서 특별한 선물을 받아가세요!' }
+        '026': { message: '짠! 축하합니다!<br>당신이 바로 ★행운의 26명★입니다.<br>현장에서 특별한 선물을 받아가세요!' }
     };
     
     const spinBtn = document.getElementById('spinBtn');
@@ -223,13 +226,14 @@ window.addEventListener('load', () => {
     }
     
     if (spinBtn && reels.length === 3) {
-        // 테스트를 위해 1회 제한 임시 해제
-        // if (hasPlayedBefore()) {
-        //     showAlreadyPlayedMessage();
-        // }
+        if (hasPlayedBefore()) {
+            showAlreadyPlayedMessage();
+        }
 
         const setupInitialPositions = () => {
-            const initialSymbols = ['0', '2', '6'];  // 026 조합으로 초기 설정
+            if (isGameRunning) return; // 게임 실행 중이면 초기화 중단
+
+            const initialSymbols = ['1', '3', '5'];
             let successCount = 0;
 
             reels.forEach((reel, index) => {
@@ -252,10 +256,16 @@ window.addEventListener('load', () => {
             }
         };
 
+        let isGameRunning = false; // 게임 실행 중인지 추적
+
         // 페이지 로드 시 여러 번 초기화로 안정성 확보
         setupInitialPositions();
-        setTimeout(setupInitialPositions, 500);
-        setTimeout(setupInitialPositions, 1000);
+        setTimeout(() => {
+            if (!isGameRunning) setupInitialPositions();
+        }, 500);
+        setTimeout(() => {
+            if (!isGameRunning) setupInitialPositions();
+        }, 1000);
         
         spinBtn.addEventListener('click', async () => {
             // 게임 종료 상태 체크
@@ -265,12 +275,12 @@ window.addEventListener('load', () => {
                 return;
             }
 
-            // 테스트를 위해 1회 플레이 제한 임시 해제
-            // if (hasPlayedBefore()) {
-            //     showAlreadyPlayedMessage();
-            //     return;
-            // }
+            if (hasPlayedBefore()) {
+                showAlreadyPlayedMessage();
+                return;
+            }
 
+            isGameRunning = true; // 게임 실행 시작
             spinBtn.disabled = true;
             spinBtn.textContent = '🔄 뽑는 중...';
 
@@ -279,6 +289,7 @@ window.addEventListener('load', () => {
             const result = determineResult();
             await animateReels(result.symbols);
 
+            // 개별 릴에서 이미 제거되었지만 안전을 위해 한 번 더 확인
             reels.forEach(reel => reel.classList.remove('spinning'));
             showResult(result);
 
@@ -286,16 +297,9 @@ window.addEventListener('load', () => {
                 showWinLine();
             }
 
-            // 테스트를 위해 1회 제한 및 버튼 비활성화 임시 해제
-            // markAsPlayed();
+            markAsPlayed();
 
-            // 테스트용: 계속 플레이 가능하도록 버튼 복구
-            if (!result.isWin) {
-                spinBtn.disabled = false;
-                spinBtn.textContent = '🎁 행운 뽑기';
-                spinBtn.style.opacity = '1';
-                spinBtn.style.cursor = 'pointer';
-            }
+            isGameRunning = false; // 게임 실행 종료
 
             setTimeout(() => {
                 document.querySelectorAll('.symbol').forEach(symbol => {
@@ -309,23 +313,22 @@ window.addEventListener('load', () => {
         const random = Math.random();
 
         // 첫 번째, 두 번째 릴은 항상 0, 2로 고정
-        // 세 번째 릴만 랜덤 (6.5% 확률로 6, 나머지는 다른 숫자)
+        // 세 번째 릴만 랜덤 (30% 확률로 6, 나머지는 다른 숫자)
         let thirdReel;
-        if (random < 0.065) {
+        if (random < 0.3) {
             // 당첨: 세 번째 릴이 6
-            thirdReel = '6';
             return {
                 isWin: true,
-                symbols: ['0', '2', '6'],  // 0-2-6 당첨!
+                symbols: ['0', '2', '6'],
                 prize: prizes['026']
             };
         } else {
             // 꽝: 세 번째 릴이 0,1,2,3,4,5 중 하나
             const loseNumbers = ['0', '1', '2', '3', '4', '5'];
-            thirdReel = loseNumbers[Math.floor(Math.random() * loseNumbers.length)];
+            const thirdReel = loseNumbers[Math.floor(Math.random() * loseNumbers.length)];
             return {
                 isWin: false,
-                symbols: ['0', '2', thirdReel]  // 0-2-X (X는 6이 아닌 숫자)
+                symbols: ['0', '2', thirdReel]
             };
         }
     }
@@ -349,8 +352,22 @@ window.addEventListener('load', () => {
                 const totalSymbols = 40;
                 const totalHeight = totalSymbols * symbolHeight;
                 
-                updateReelSymbols(reel, finalSymbol);
-                
+                // 심볼 배열 미리 생성 (DOM 조작 최소화)
+                const circularSymbols = generateCircularSymbols(finalSymbol);
+
+                // 기존 DOM 구조를 유지하면서 텍스트만 업데이트
+                const existingSymbols = symbolStream.querySelectorAll('.symbol');
+                if (existingSymbols.length === circularSymbols.length) {
+                    // 기존 엘리먼트들의 텍스트만 업데이트
+                    existingSymbols.forEach((element, index) => {
+                        element.textContent = circularSymbols[index];
+                    });
+                } else {
+                    // 완전 재생성 (폴백)
+                    updateReelSymbols(reel, finalSymbol);
+                }
+
+                // 중앙 인덱스는 항상 20번째로 고정 (generateCircularSymbols에서 보장)
                 const centerIndex = 20;
                 const finalSymbolTop = centerIndex * symbolHeight;
                 const finalOffset = viewportTop - finalSymbolTop;
@@ -376,16 +393,15 @@ window.addEventListener('load', () => {
                         symbolStream.style.transform = `translateY(${currentOffset}px)`;
                         requestAnimationFrame(animate);
                     } else {
-                        const currentCycle = Math.floor(-currentOffset / totalHeight);
+                        // 단순하게 정확한 최종 위치로 설정
                         let bestOffset = finalOffset;
-                        let minDistance = Math.abs(finalOffset - currentOffset);
-                        
-                        for (let cycle = currentCycle - 1; cycle <= currentCycle + 1; cycle++) {
-                            const candidateOffset = finalOffset + (cycle * totalHeight);
-                            const distance = Math.abs(candidateOffset - currentOffset);
-                            if (distance < minDistance) {
-                                minDistance = distance;
-                                bestOffset = candidateOffset;
+
+                        // 현재 위치에서 가장 가까운 올바른 위치 찾기
+                        while (Math.abs(bestOffset - currentOffset) > totalHeight / 2) {
+                            if (bestOffset > currentOffset) {
+                                bestOffset -= totalHeight;
+                            } else {
+                                bestOffset += totalHeight;
                             }
                         }
                         
@@ -424,6 +440,7 @@ window.addEventListener('load', () => {
                                 requestAnimationFrame(smoothStop);
                             } else {
                                 symbolStream.style.transform = `translateY(${bestOffset}px)`;
+                                reel.classList.remove('spinning');
                                 highlightWinningSymbol(reel, finalSymbol);
                                 resolve();
                             }
@@ -549,7 +566,7 @@ window.addEventListener('load', () => {
 
             // 당첨자에게는 계속 축하 메시지 표시
             if (resultMessage) {
-                resultMessage.textContent = result.prize.message;
+                resultMessage.innerHTML = result.prize.message;
                 resultMessage.className = 'result-message win';
             }
             if (prizeInfo) prizeInfo.textContent = '';
@@ -569,7 +586,7 @@ window.addEventListener('load', () => {
 
         } else {
             if (resultMessage) {
-                resultMessage.innerHTML = '이번엔 꽝😭<br>창립 26주년 함께해주셔서 감사합니다~';
+                resultMessage.innerHTML = '이번엔 꽝😭<br>창립 26주년<br>함께해주셔서 감사합니다~';
                 resultMessage.className = 'result-message lose';
             }
             if (prizeInfo) prizeInfo.textContent = '';
