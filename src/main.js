@@ -51,7 +51,7 @@ window.addEventListener('load', () => {
     }
 
     const allSymbols = ['0', '1', '2', '3', '4', '5', '6'];  // 릴 표시용 (0~6 숫자)
-    const MAX_WINNERS = 26;  // 최대 당첨자 수
+    const MAX_WINNERS = 2;  // 테스트용: 2명 당첨 시 게임 종료
     let isWinner = false;  // 현재 사용자가 당첨자인지 확인하는 플래그
 
     // Firebase 데이터베이스 참조
@@ -265,11 +265,11 @@ window.addEventListener('load', () => {
                 return;
             }
 
-            // 1회 플레이 제한 체크
-            if (hasPlayedBefore()) {
-                showAlreadyPlayedMessage();
-                return;
-            }
+            // 테스트를 위해 1회 플레이 제한 임시 해제
+            // if (hasPlayedBefore()) {
+            //     showAlreadyPlayedMessage();
+            //     return;
+            // }
 
             spinBtn.disabled = true;
             spinBtn.textContent = '🔄 뽑는 중...';
@@ -286,15 +286,15 @@ window.addEventListener('load', () => {
                 showWinLine();
             }
 
-            // 게임 플레이 기록 저장 (1회 제한)
-            markAsPlayed();
+            // 테스트를 위해 1회 제한 및 버튼 비활성화 임시 해제
+            // markAsPlayed();
 
-            // 당첨자가 아닌 경우만 버튼 상태 변경 (당첨자는 showResult에서 이미 처리됨)
+            // 테스트용: 계속 플레이 가능하도록 버튼 복구
             if (!result.isWin) {
-                spinBtn.disabled = true;
-                spinBtn.textContent = '참여 완료';
-                spinBtn.style.opacity = '0.5';
-                spinBtn.style.cursor = 'not-allowed';
+                spinBtn.disabled = false;
+                spinBtn.textContent = '🎁 행운 뽑기';
+                spinBtn.style.opacity = '1';
+                spinBtn.style.cursor = 'pointer';
             }
 
             setTimeout(() => {
