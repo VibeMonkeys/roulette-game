@@ -755,6 +755,7 @@ body::before {
     box-shadow: 0 4px 12px rgba(0, 112, 74, 0.4);
 }
 
+
 .prize-item-good {
     background: linear-gradient(135deg, #8B4513, #A0522D);
     border: 2px solid #8B4513;
@@ -804,6 +805,7 @@ body::before {
         box-shadow: 0 8px 24px rgba(42, 193, 188, 0.8);
     }
 }
+
 
 /* 게임 상태 */
 .game-status {
