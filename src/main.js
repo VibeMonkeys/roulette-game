@@ -261,9 +261,10 @@ window.addEventListener('load', () => {
     }
     
     if (spinBtn && reels.length === 3) {
-        if (hasPlayedBefore()) {
-            showAlreadyPlayedMessage();
-        }
+        // 테스트를 위해 1회 참여 제한 해제
+        // if (hasPlayedBefore()) {
+        //     showAlreadyPlayedMessage();
+        // }
 
         const setupInitialPositions = () => {
             if (isGameRunning) return; // 게임 실행 중이면 초기화 중단
@@ -316,10 +317,11 @@ window.addEventListener('load', () => {
                 return;
             }
 
-            if (hasPlayedBefore()) {
-                showAlreadyPlayedMessage();
-                return;
-            }
+            // 테스트를 위해 1회 참여 제한 해제
+            // if (hasPlayedBefore()) {
+            //     showAlreadyPlayedMessage();
+            //     return;
+            // }
 
             isGameRunning = true; // 게임 실행 시작
             spinBtn.disabled = true;
@@ -338,9 +340,18 @@ window.addEventListener('load', () => {
                 showWinLine();
             }
 
-            markAsPlayed();
+            // 테스트를 위해 1회 참여 제한 해제
+            // markAsPlayed();
 
             isGameRunning = false; // 게임 실행 종료
+            
+            // 테스트를 위해 버튼 즉시 활성화
+            if (spinBtn) {
+                spinBtn.disabled = false;
+                spinBtn.textContent = '🎁 행운 뽑기';
+                spinBtn.style.opacity = '1';
+                spinBtn.style.cursor = 'pointer';
+            }
             
             setTimeout(() => {
                 document.querySelectorAll('.symbol').forEach(symbol => {
@@ -354,9 +365,9 @@ window.addEventListener('load', () => {
         const random = Math.random();
 
         // 첫 번째, 두 번째 릴은 항상 0, 2로 고정
-        // 세 번째 릴만 랜덤 (30% 확률로 6, 나머지는 다른 숫자)
+        // 세 번째 릴만 랜덤 (6.5% 확률로 6, 나머지는 다른 숫자)
         let thirdReel;
-        if (random < 0.3) {
+        if (random < 0.065) {
             // 당첨: 세 번째 릴이 6
             return {
                 isWin: true,
@@ -613,14 +624,14 @@ window.addEventListener('load', () => {
             if (prizeInfo) prizeInfo.textContent = '';
             setTimeout(() => triggerCelebrationAnimation(), 500);
 
-            // 당첨자도 버튼 비활성화 (더 이상 플레이 불가)
-            const spinBtn = document.getElementById('spinBtn');
-            if (spinBtn) {
-                spinBtn.disabled = true;
-                spinBtn.textContent = '🎉 당첨 완료';
-                spinBtn.style.opacity = '0.5';
-                spinBtn.style.cursor = 'not-allowed';
-            }
+            // 테스트를 위해 당첨 후 버튼 비활성화 해제
+            // const spinBtn = document.getElementById('spinBtn');
+            // if (spinBtn) {
+            //     spinBtn.disabled = true;
+            //     spinBtn.textContent = '🎉 당첨 완료';
+            //     spinBtn.style.opacity = '0.5';
+            //     spinBtn.style.cursor = 'not-allowed';
+            // }
 
             // 즉시 Firebase에 저장하여 다른 사용자들에게 게임 종료 알림
             saveWinner();
