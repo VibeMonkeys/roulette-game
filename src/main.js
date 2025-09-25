@@ -52,6 +52,7 @@ window.addEventListener('load', () => {
 
     const allSymbols = ['0', '1', '2', '3', '4', '5', '6'];  // 릴 표시용 (0~6 숫자)
     const MAX_WINNERS = 1;  // 테스트용: 1명만 당첨되면 게임 종료
+    let isWinner = false;  // 현재 사용자가 당첨자인지 확인하는 플래그
 
     // Firebase 데이터베이스 참조
     const winnersRef = database.ref('winners');
@@ -90,12 +91,17 @@ window.addEventListener('load', () => {
             });
             showGameEndedMessage();
         } catch (error) {
-            console.error('게임 종료 처리 중 오류:', error);
+            console.error('게임 종료 처리 오류:', error);
         }
     }
 
-    // 게임 종료 메시지 표시
+    // 게임 종료 메시지 표시 (당첨자가 아닌 경우만)
     function showGameEndedMessage() {
+        // 현재 사용자가 당첨자라면 축하 메시지 유지
+        if (isWinner) {
+            return;
+        }
+
         const spinBtn = document.getElementById('spinBtn');
         const resultMessage = document.getElementById('resultMessage');
         const prizeInfo = document.getElementById('prizeInfo');
@@ -130,7 +136,7 @@ window.addEventListener('load', () => {
             });
 
         } catch (error) {
-            console.error('당첨자 저장 중 오류:', error);
+            console.error('당첨자 저장 오류:', error);
         }
     }
 
@@ -511,15 +517,20 @@ window.addEventListener('load', () => {
     
     function showResult(result) {
         if (result.isWin) {
-            // 당첨 시 Firebase에 당첨자 정보 저장
-            saveWinner();
+            // 현재 사용자를 당첨자로 설정
+            isWinner = true;
 
+            // 당첨자에게는 계속 축하 메시지 표시
             if (resultMessage) {
                 resultMessage.textContent = result.prize.message;
                 resultMessage.className = 'result-message win';
             }
             if (prizeInfo) prizeInfo.textContent = '';
             setTimeout(() => triggerCelebrationAnimation(), 500);
+
+            // 즉시 Firebase에 저장하여 다른 사용자들에게 게임 종료 알림
+            saveWinner();
+
         } else {
             if (resultMessage) {
                 resultMessage.innerHTML = '이번엔 꽝😭<br>창립 26주년 함께해주셔서 감사합니다~';
