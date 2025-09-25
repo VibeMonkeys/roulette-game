@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test - Fixed</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .debug-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: white;
+            border: 2px solid #333;
+            padding: 10px;
+            max-width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 10000;
+            font-size: 12px;
+            font-family: monospace;
+        }
+        .debug-controls {
+            margin-bottom: 10px;
+        }
+        .debug-controls button {
+            margin: 2px;
+            padding: 5px 10px;
+            font-size: 11px;
+        }
+        #debugLog {
+            white-space: pre-wrap;
+            background: #f0f0f0;
+            padding: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-panel">
+        <div class="debug-controls">
+            <button onclick="testAllReels()">Test All</button>
+            <button onclick="testReel2()">Test Reel2</button>
+            <button onclick="resetReels()">Reset</button>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+        <div id="debugLog"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <h1 class="title">DEBUG TEST - REEL FIX</h1>
+        </header>
+
+        <main class="game-area">
+            <div class="slot-machine" id="slotMachine">
+                <div class="slot-frame">
+                    <div class="reel-container">
+                        <div class="reel" id="reel1">
+                            <div class="symbol-stream">
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                            </div>
+                        </div>
+                        <div class="reel" id="reel2">
+                            <div class="symbol-stream">
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                            </div>
+                        </div>
+                        <div class="reel" id="reel3">
+                            <div class="symbol-stream">
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                                <div class="symbol">0</div><div class="symbol">1</div><div class="symbol">2</div><div class="symbol">3</div><div class="symbol">4</div><div class="symbol">5</div><div class="symbol">6</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="spin-button" onclick="simulateSpin()">🎁 Simulate Spin</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const allSymbols = ['0', '1', '2', '3', '4', '5', '6'];
+        const debugLog = document.getElementById('debugLog');
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            debugLog.textContent += `[${timestamp}] ${message}\n`;
+            debugLog.scrollTop = debugLog.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function clearLog() {
+            debugLog.textContent = '';
+        }
+
+        // Copy the fixed functions from main.js
+        function getViewportSettings() {
+            const screenWidth = window.innerWidth;
+            if (screenWidth <= 360) {
+                return { symbolHeight: 35, viewportTop: 35 };
+            } else if (screenWidth <= 400) {
+                return { symbolHeight: 40, viewportTop: 40 };
+            } else if (screenWidth <= 768) {
+                return { symbolHeight: 40, viewportTop: 40 };
+            } else {
+                return { symbolHeight: 50, viewportTop: 50 };
+            }
+        }
+        
+        function generateCircularSymbols(targetSymbol, totalVisible = 42) {
+            const targetIndex = allSymbols.indexOf(targetSymbol);
+            if (targetIndex === -1) {
+                log(`ERROR: Symbol '${targetSymbol}' not found in allSymbols array!`);
+                return allSymbols.concat(allSymbols).concat(allSymbols).concat(allSymbols).concat(allSymbols).concat(allSymbols).slice(0, totalVisible);
+            }
+
+            const result = [];
+            const centerPosition = 21;
+
+            for (let i = 0; i < totalVisible; i++) {
+                const offset = i - centerPosition;
+                let symbolIndex = (targetIndex - offset + allSymbols.length * 10) % allSymbols.length;
+                result.push(allSymbols[symbolIndex]);
+            }
+
+            log(`Generated ${totalVisible} symbols for '${targetSymbol}', center(${centerPosition}): ${result[centerPosition]}`);
+            return result;
+        }
+        
+        function updateReelSymbols(reel, targetSymbol) {
+            const symbolStream = reel.querySelector('.symbol-stream');
+            if (!symbolStream) {
+                log(`ERROR: symbol-stream not found for reel: ${reel.id}`);
+                return false;
+            }
+
+            log(`Updating reel ${reel.id} with target symbol: ${targetSymbol}`);
+            
+            const circularSymbols = generateCircularSymbols(targetSymbol);
+            if (circularSymbols.length === 0) {
+                log(`ERROR: No symbols generated for ${targetSymbol}!`);
+                return false;
+            }
+            
+            symbolStream.innerHTML = '';
+
+            circularSymbols.forEach((symbol, index) => {
+                const symbolDiv = document.createElement('div');
+                symbolDiv.className = 'symbol';
+                symbolDiv.textContent = symbol;
+                symbolStream.appendChild(symbolDiv);
+            });
+            
+            log(`Added ${circularSymbols.length} symbols to ${reel.id}`);
+            
+            // Check visibility
+            const computedStyle = window.getComputedStyle(reel);
+            const streamComputedStyle = window.getComputedStyle(symbolStream);
+            log(`Reel ${reel.id} - display:${computedStyle.display}, visibility:${computedStyle.visibility}, opacity:${computedStyle.opacity}`);
+            log(`Stream ${reel.id} - display:${streamComputedStyle.display}, visibility:${streamComputedStyle.visibility}, opacity:${streamComputedStyle.opacity}`);
+            
+            return true;
+        }
+        
+        function updateReelPosition(reel, symbol) {
+            const symbolStream = reel.querySelector('.symbol-stream');
+            if (!symbolStream) {
+                log(`ERROR: symbol-stream not found for reel: ${reel.id}`);
+                return false;
+            }
+            
+            log(`Positioning reel ${reel.id} with symbol: ${symbol}`);
+            const updateSuccess = updateReelSymbols(reel, symbol);
+            if (!updateSuccess) {
+                log(`ERROR: Symbol update failed for reel: ${reel.id}`);
+                return false;
+            }
+            
+            const { symbolHeight, viewportTop } = getViewportSettings();
+            const centerIndex = 21;
+            const targetSymbolTop = centerIndex * symbolHeight;
+            const offset = viewportTop - targetSymbolTop;
+            
+            log(`Position calc (${reel.id}): symbolHeight=${symbolHeight}, viewportTop=${viewportTop}, offset=${offset}`);
+            
+            symbolStream.style.transform = `translateZ(0) translateY(${offset}px)`;
+            symbolStream.style.transition = 'none';
+            
+            log(`Applied transform (${reel.id}): ${symbolStream.style.transform}`);
+            
+            // Check actual applied transform
+            setTimeout(() => {
+                const actualTransform = window.getComputedStyle(symbolStream).transform;
+                log(`Actual transform (${reel.id}): ${actualTransform}`);
+            }, 10);
+            
+            return true;
+        }
+
+        function testAllReels() {
+            log('=== Testing All Reels ===');
+            const reels = document.querySelectorAll('.reel');
+            const testSymbols = ['2', '4', '6'];
+            
+            reels.forEach((reel, index) => {
+                log(`Testing ${reel.id} with symbol ${testSymbols[index]}`);
+                updateReelPosition(reel, testSymbols[index]);
+            });
+        }
+
+        function testReel2() {
+            log('=== Testing Reel2 Only ===');
+            const reel2 = document.getElementById('reel2');
+            if (reel2) {
+                updateReelPosition(reel2, '3');
+            } else {
+                log('ERROR: reel2 element not found!');
+            }
+        }
+
+        function resetReels() {
+            log('=== Resetting All Reels ===');
+            const reels = document.querySelectorAll('.reel');
+            const initialSymbols = ['1', '3', '5'];
+            
+            reels.forEach((reel, index) => {
+                updateReelPosition(reel, initialSymbols[index]);
+            });
+        }
+
+        function simulateSpin() {
+            log('=== Simulating Spin ===');
+            const reels = document.querySelectorAll('.reel');
+            const finalSymbols = ['0', '2', '6']; // Winning combination
+            
+            reels.forEach((reel, index) => {
+                setTimeout(() => {
+                    updateReelPosition(reel, finalSymbols[index]);
+                    log(`Spin result - ${reel.id}: ${finalSymbols[index]}`);
+                }, index * 500);
+            });
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            log('Page loaded - initializing reels');
+            setTimeout(resetReels, 100);
+            
+            // Test reel2 specifically after a delay
+            setTimeout(() => {
+                log('=== Specific Reel2 Test ===');
+                const reel2 = document.getElementById('reel2');
+                if (reel2) {
+                    const rect = reel2.getBoundingClientRect();
+                    log(`Reel2 dimensions: ${rect.width}x${rect.height} at (${rect.left}, ${rect.top})`);
+                    
+                    const symbolStream = reel2.querySelector('.symbol-stream');
+                    if (symbolStream) {
+                        const streamRect = symbolStream.getBoundingClientRect();
+                        log(`Reel2 stream dimensions: ${streamRect.width}x${streamRect.height} at (${streamRect.left}, ${streamRect.top})`);
+                        
+                        const symbols = symbolStream.querySelectorAll('.symbol');
+                        log(`Reel2 has ${symbols.length} symbols`);
+                        
+                        // Check a few symbols
+                        for (let i = 19; i < 24; i++) {
+                            if (symbols[i]) {
+                                const symbolRect = symbols[i].getBoundingClientRect();
+                                log(`Symbol[${i}]: '${symbols[i].textContent}' at (${symbolRect.left}, ${symbolRect.top})`);
+                            }
+                        }
+                    }
+                } else {
+                    log('ERROR: Reel2 element not found during specific test!');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

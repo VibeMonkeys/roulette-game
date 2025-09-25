@@ -168,14 +168,16 @@ window.addEventListener('load', () => {
     }
     
     // 순환 구조를 동적으로 생성하는 함수
-    function generateCircularSymbols(targetSymbol, totalVisible = 40) {
+    function generateCircularSymbols(targetSymbol, totalVisible = 42) {
         const targetIndex = allSymbols.indexOf(targetSymbol);
         if (targetIndex === -1) {
-            return [];
+            console.error(`generateCircularSymbols: 심볼 '${targetSymbol}'을 allSymbols에서 찾을 수 없음`);
+            // 기본 심볼로 폴백
+            return allSymbols.concat(allSymbols).concat(allSymbols).concat(allSymbols).concat(allSymbols).concat(allSymbols).slice(0, totalVisible);
         }
 
         const result = [];
-        const centerPosition = 20; // 고정된 중앙 위치 (20번째 인덱스)
+        const centerPosition = 21; // HTML에 맞춰 42개 중 중앙 위치로 조정 (21번째 인덱스)
 
         // 중앙에 목표 심볼이 정확히 오도록 배치
         for (let i = 0; i < totalVisible; i++) {
@@ -187,12 +189,21 @@ window.addEventListener('load', () => {
         return result;
     }
     
-    // 릴의 심볼 스트림을 동적으로 업데이트하는 함수
+    // 릴의 심볼 스트림을 동적으로 업데이트하는 함수 - 원본 방식 복원
     function updateReelSymbols(reel, targetSymbol) {
         const symbolStream = reel.querySelector('.symbol-stream');
-        if (!symbolStream) return;
+        if (!symbolStream) {
+            return false;
+        }
 
+        
+        // 42개 심볼 순환 배열 생성
         const circularSymbols = generateCircularSymbols(targetSymbol);
+        if (circularSymbols.length === 0) {
+            return false;
+        }
+        
+        
         symbolStream.innerHTML = '';
 
         circularSymbols.forEach((symbol, index) => {
@@ -201,6 +212,13 @@ window.addEventListener('load', () => {
             symbolDiv.textContent = symbol;
             symbolStream.appendChild(symbolDiv);
         });
+        
+        
+        // 릴이 제대로 표시되는지 확인
+        const computedStyle = window.getComputedStyle(reel);
+        const streamComputedStyle = window.getComputedStyle(symbolStream);
+        
+        return true;
     }
     const prizes = {
         '026': { message: '짠! 축하합니다!<br>당신이 바로 ★행운의 26명★입니다.<br>현장에서 특별한 선물을 받아가세요!' }
@@ -213,16 +231,33 @@ window.addEventListener('load', () => {
     
     function updateReelPosition(reel, symbol) {
         const symbolStream = reel.querySelector('.symbol-stream');
-        if (!symbolStream) return;
+        if (!symbolStream) {
+            console.error(`updateReelPosition: symbol-stream을 찾을 수 없음 (릴: ${reel.id})`);
+            return false;
+        }
         
-        updateReelSymbols(reel, symbol);
+        const updateSuccess = updateReelSymbols(reel, symbol);
+        if (!updateSuccess) {
+            return false;
+        }
         
+        // HTML과 일치하는 42개 심볼 기준 위치 계산
         const { symbolHeight, viewportTop } = getViewportSettings();
-        const centerIndex = 20;
+        const centerIndex = 21; // 42개 심볼 중 중앙 위치
         const targetSymbolTop = centerIndex * symbolHeight;
         const offset = viewportTop - targetSymbolTop;
+        
+        
         symbolStream.style.transform = `translateZ(0) translateY(${offset}px)`;
         symbolStream.style.transition = 'none';
+        
+        
+        // 변경 후 실제 적용됐는지 확인
+        setTimeout(() => {
+            const actualTransform = window.getComputedStyle(symbolStream).transform;
+        }, 10);
+        
+        return true;
     }
     
     if (spinBtn && reels.length === 3) {
@@ -233,24 +268,30 @@ window.addEventListener('load', () => {
         const setupInitialPositions = () => {
             if (isGameRunning) return; // 게임 실행 중이면 초기화 중단
 
-            const initialSymbols = ['1', '3', '5'];
+            const initialSymbols = ['0', '2', '6'];
             let successCount = 0;
 
+            
             reels.forEach((reel, index) => {
                 const symbolStream = reel.querySelector('.symbol-stream');
                 if (symbolStream) {
-                    updateReelPosition(reel, initialSymbols[index]);
-                    successCount++;
+                    const success = updateReelPosition(reel, initialSymbols[index]);
+                    if (success) {
+                        successCount++;
+                    } else {
+                    }
+                } else {
                 }
             });
 
+            
             if (successCount < 3) {
                 setTimeout(setupInitialPositions, 100);
             } else {
                 // 초기 위치 설정 완료 후 화면 안정화
                 setTimeout(() => {
                     reels.forEach((reel, index) => {
-                        updateReelPosition(reel, initialSymbols[index]);
+                        const success = updateReelPosition(reel, initialSymbols[index]);
                     });
                 }, 200);
             }
@@ -300,7 +341,7 @@ window.addEventListener('load', () => {
             markAsPlayed();
 
             isGameRunning = false; // 게임 실행 종료
-
+            
             setTimeout(() => {
                 document.querySelectorAll('.symbol').forEach(symbol => {
                     symbol.classList.remove('winning-symbol', 'blinking');
@@ -349,7 +390,7 @@ window.addEventListener('load', () => {
                 const startTime = Date.now();
                 
                 const { symbolHeight, viewportTop } = getViewportSettings();
-                const totalSymbols = 40;
+                const totalSymbols = 42; // HTML과 일치하도록 변경
                 const totalHeight = totalSymbols * symbolHeight;
                 
                 // 심볼 배열 미리 생성 (DOM 조작 최소화)
@@ -367,8 +408,8 @@ window.addEventListener('load', () => {
                     updateReelSymbols(reel, finalSymbol);
                 }
 
-                // 중앙 인덱스는 항상 20번째로 고정 (generateCircularSymbols에서 보장)
-                const centerIndex = 20;
+                // 중앙 인덱스는 항상 21번째로 고정 (42개 심볼 기준)
+                const centerIndex = 21;
                 const finalSymbolTop = centerIndex * symbolHeight;
                 const finalOffset = viewportTop - finalSymbolTop;
                 const initialOffset = finalOffset;
@@ -537,8 +578,8 @@ window.addEventListener('load', () => {
             symbol.classList.remove('winning-symbol', 'blinking');
         });
 
-        // 중앙에 표시된 심볼 찾기 (20번째 인덱스)
-        const centerSymbolElement = allSymbolElements[20];
+        // 중앙에 표시된 심볼 찾기 (21번째 인덱스, 42개 심볼 기준)
+        const centerSymbolElement = allSymbolElements[21];
         if (centerSymbolElement && centerSymbolElement.textContent === winningSymbol) {
             centerSymbolElement.classList.add('winning-symbol');
             setTimeout(() => {
@@ -705,4 +746,5 @@ window.addEventListener('load', () => {
             }, i * 50);
         }
     }
+    
 });
