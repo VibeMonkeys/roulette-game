@@ -2,6 +2,21 @@
  * 휴넷 창립 26주년 기념 슬롯머신 게임
  */
 
+// Firebase 설정
+const firebaseConfig = {
+    apiKey: "AIzaSyBM0jvvnSmQGwWAzSd5YSnsLMsQvsR20UI",
+    authDomain: "roulette-game-bd714.firebaseapp.com",
+    databaseURL: "https://roulette-game-bd714-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "roulette-game-bd714",
+    storageBucket: "roulette-game-bd714.firebasestorage.app",
+    messagingSenderId: "331298889269",
+    appId: "1:331298889269:web:1c115708e1c7875edc5b7c"
+};
+
+// Firebase 초기화
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
 // 게임 로직
 window.addEventListener('load', () => {
     const GAME_PLAYED_KEY = 'hunet26_game_played';
@@ -36,6 +51,92 @@ window.addEventListener('load', () => {
     }
 
     const allSymbols = ['0', '1', '2', '3', '4', '5', '6'];  // 릴 표시용 (0~6 숫자)
+    const MAX_WINNERS = 1;  // 테스트용: 1명만 당첨되면 게임 종료
+
+    // Firebase 데이터베이스 참조
+    const winnersRef = database.ref('winners');
+    const gameStatusRef = database.ref('gameStatus');
+
+    // 게임 종료 상태 체크 및 UI 업데이트
+    function checkGameStatus() {
+        gameStatusRef.on('value', (snapshot) => {
+            const status = snapshot.val();
+            if (status && status.ended) {
+                showGameEndedMessage();
+            }
+        });
+    }
+
+    // 당첨자 수 실시간 모니터링
+    function monitorWinnerCount() {
+        winnersRef.on('value', (snapshot) => {
+            const winners = snapshot.val();
+            const winnerCount = winners ? Object.keys(winners).length : 0;
+
+            if (winnerCount >= MAX_WINNERS) {
+                endGame();
+            }
+        });
+    }
+
+    // 게임 종료 처리
+    async function endGame() {
+        try {
+            // 게임 종료 상태 저장
+            await gameStatusRef.set({
+                ended: true,
+                endTime: new Date().toISOString(),
+                totalWinners: MAX_WINNERS
+            });
+            showGameEndedMessage();
+        } catch (error) {
+            console.error('게임 종료 처리 중 오류:', error);
+        }
+    }
+
+    // 게임 종료 메시지 표시
+    function showGameEndedMessage() {
+        const spinBtn = document.getElementById('spinBtn');
+        const resultMessage = document.getElementById('resultMessage');
+        const prizeInfo = document.getElementById('prizeInfo');
+
+        if (spinBtn) {
+            spinBtn.disabled = true;
+            spinBtn.textContent = '🙏 이벤트 종료';
+            spinBtn.style.opacity = '0.5';
+            spinBtn.style.cursor = 'not-allowed';
+        }
+
+        if (resultMessage) {
+            resultMessage.innerHTML = '🙏🏻 이벤트 종료<br>휴넷 창립 26주년 ★행운의 26명★이 모두 선정되었습니다!<br>함께 축하해 주셔서 감사합니다.';
+            resultMessage.className = 'result-message';
+        }
+
+        if (prizeInfo) {
+            prizeInfo.textContent = '';
+        }
+    }
+
+    // 당첨자 정보 저장
+    async function saveWinner() {
+        try {
+            const timestamp = new Date().toISOString();
+            const winnerId = `winner_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+            await winnersRef.child(winnerId).set({
+                timestamp: timestamp,
+                userAgent: navigator.userAgent,
+                source: 'web'
+            });
+
+        } catch (error) {
+            console.error('당첨자 저장 중 오류:', error);
+        }
+    }
+
+    // 페이지 로드 시 게임 상태 체크 시작
+    checkGameStatus();
+    monitorWinnerCount();
     
     // 화면 크기에 따른 심볼 높이와 뷰포트 위치 계산
     function getViewportSettings() {
@@ -410,6 +511,9 @@ window.addEventListener('load', () => {
     
     function showResult(result) {
         if (result.isWin) {
+            // 당첨 시 Firebase에 당첨자 정보 저장
+            saveWinner();
+
             if (resultMessage) {
                 resultMessage.textContent = result.prize.message;
                 resultMessage.className = 'result-message win';
