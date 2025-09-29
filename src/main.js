@@ -341,7 +341,14 @@ window.addEventListener('load', () => {
             markAsPlayed();
 
             isGameRunning = false; // 게임 실행 종료
-            
+
+            // 게임 종료 후 버튼 상태 업데이트 (당첨이 아닌 경우)
+            if (!result.isWin && spinBtn) {
+                spinBtn.disabled = true;
+                spinBtn.textContent = '✅ 참여완료';
+                spinBtn.style.opacity = '0.5';
+                spinBtn.style.cursor = 'not-allowed';
+            }
             
             setTimeout(() => {
                 document.querySelectorAll('.symbol').forEach(symbol => {
