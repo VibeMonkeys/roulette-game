@@ -152,18 +152,46 @@ window.addEventListener('load', () => {
     checkGameStatus();
     monitorWinnerCount();
     
-    // 화면 크기에 따른 심볼 높이와 뷰포트 위치 계산
+    // 화면 크기에 따른 심볼 높이와 뷰포트 위치 계산 (브라우저 호환성 강화)
     function getViewportSettings() {
-        const screenWidth = window.innerWidth;
-        
+        // 더 정확한 화면 크기 감지 (다양한 브라우저 지원)
+        const screenWidth = Math.max(
+            window.innerWidth || 0,
+            document.documentElement.clientWidth || 0,
+            document.body.clientWidth || 0
+        );
+
+        // 실제 DOM 요소에서 심볼 높이 측정 (더 정확한 계산)
+        const testSymbol = document.querySelector('.symbol');
+        let actualSymbolHeight = 40; // 기본값
+
+        if (testSymbol) {
+            const rect = testSymbol.getBoundingClientRect();
+            const computedStyle = window.getComputedStyle(testSymbol);
+            actualSymbolHeight = rect.height || parseFloat(computedStyle.height) || 40;
+        }
+
+        // 브라우저별 안전한 범위로 조정
         if (screenWidth <= 360) {
-            return { symbolHeight: 35, viewportTop: 35 };
+            return {
+                symbolHeight: Math.max(35, Math.floor(actualSymbolHeight)),
+                viewportTop: Math.max(35, Math.floor(actualSymbolHeight))
+            };
         } else if (screenWidth <= 400) {
-            return { symbolHeight: 40, viewportTop: 40 };
+            return {
+                symbolHeight: Math.max(40, Math.floor(actualSymbolHeight)),
+                viewportTop: Math.max(40, Math.floor(actualSymbolHeight))
+            };
         } else if (screenWidth <= 768) {
-            return { symbolHeight: 40, viewportTop: 40 };
+            return {
+                symbolHeight: Math.max(40, Math.floor(actualSymbolHeight)),
+                viewportTop: Math.max(40, Math.floor(actualSymbolHeight))
+            };
         } else {
-            return { symbolHeight: 50, viewportTop: 50 };
+            return {
+                symbolHeight: Math.max(50, Math.floor(actualSymbolHeight)),
+                viewportTop: Math.max(50, Math.floor(actualSymbolHeight))
+            };
         }
     }
     
@@ -189,35 +217,73 @@ window.addEventListener('load', () => {
         return result;
     }
     
-    // 릴의 심볼 스트림을 동적으로 업데이트하는 함수 - 원본 방식 복원
+    // 릴의 심볼 스트림을 동적으로 업데이트하는 함수 (브라우저 호환성 강화)
     function updateReelSymbols(reel, targetSymbol) {
         const symbolStream = reel.querySelector('.symbol-stream');
         if (!symbolStream) {
+            console.warn(`updateReelSymbols: symbol-stream not found for reel: ${reel.id}`);
             return false;
         }
 
-        
+        // 안전한 심볼 검증
+        if (!targetSymbol || !allSymbols.includes(targetSymbol)) {
+            console.warn(`updateReelSymbols: Invalid target symbol: ${targetSymbol}`);
+            return false;
+        }
+
         // 42개 심볼 순환 배열 생성
         const circularSymbols = generateCircularSymbols(targetSymbol);
         if (circularSymbols.length === 0) {
+            console.error(`updateReelSymbols: Failed to generate symbols for: ${targetSymbol}`);
             return false;
         }
-        
-        
-        symbolStream.innerHTML = '';
 
-        circularSymbols.forEach((symbol, index) => {
-            const symbolDiv = document.createElement('div');
-            symbolDiv.className = 'symbol';
-            symbolDiv.textContent = symbol;
-            symbolStream.appendChild(symbolDiv);
-        });
-        
-        
-        // 릴이 제대로 표시되는지 확인
-        const computedStyle = window.getComputedStyle(reel);
-        const streamComputedStyle = window.getComputedStyle(symbolStream);
-        
+        // DOM 업데이트를 더 안전하게 처리
+        try {
+            // 기존 내용 제거 전에 백업
+            const oldContent = symbolStream.innerHTML;
+            symbolStream.innerHTML = '';
+
+            // Fragment를 사용해서 한 번에 DOM 업데이트 (성능 향상)
+            const fragment = document.createDocumentFragment();
+
+            circularSymbols.forEach((symbol, index) => {
+                const symbolDiv = document.createElement('div');
+                symbolDiv.className = 'symbol';
+                symbolDiv.textContent = symbol;
+                // 브라우저 호환성을 위한 추가 스타일
+                symbolDiv.style.display = 'flex';
+                symbolDiv.style.alignItems = 'center';
+                symbolDiv.style.justifyContent = 'center';
+                fragment.appendChild(symbolDiv);
+            });
+
+            symbolStream.appendChild(fragment);
+
+            // 업데이트 검증
+            const updatedSymbols = symbolStream.querySelectorAll('.symbol');
+            if (updatedSymbols.length !== circularSymbols.length) {
+                console.warn(`updateReelSymbols: Symbol count mismatch. Expected: ${circularSymbols.length}, Got: ${updatedSymbols.length}`);
+                // 실패 시 원래 내용 복원
+                symbolStream.innerHTML = oldContent;
+                return false;
+            }
+
+        } catch (error) {
+            console.error(`updateReelSymbols: DOM update failed for ${reel.id}:`, error);
+            return false;
+        }
+
+        // 릴 표시 상태 검증 (브라우저별 호환성 체크)
+        setTimeout(() => {
+            const computedStyle = window.getComputedStyle(reel);
+            const streamComputedStyle = window.getComputedStyle(symbolStream);
+
+            if (computedStyle.display === 'none' || streamComputedStyle.display === 'none') {
+                console.warn(`updateReelSymbols: Reel ${reel.id} is not visible after update`);
+            }
+        }, 10);
+
         return true;
     }
     const prizes = {
@@ -235,28 +301,71 @@ window.addEventListener('load', () => {
             console.error(`updateReelPosition: symbol-stream을 찾을 수 없음 (릴: ${reel.id})`);
             return false;
         }
-        
+
+        // 심볼 업데이트 전에 현재 상태 저장
+        const originalTransform = symbolStream.style.transform;
+
         const updateSuccess = updateReelSymbols(reel, symbol);
         if (!updateSuccess) {
+            console.warn(`updateReelPosition: Symbol update failed for ${reel.id}, keeping original position`);
             return false;
         }
-        
-        // HTML과 일치하는 42개 심볼 기준 위치 계산
+
+        // 더 정확한 뷰포트 설정 계산
         const { symbolHeight, viewportTop } = getViewportSettings();
         const centerIndex = 21; // 42개 심볼 중 중앙 위치
         const targetSymbolTop = centerIndex * symbolHeight;
         const offset = viewportTop - targetSymbolTop;
-        
-        
-        symbolStream.style.transform = `translateZ(0) translateY(${offset}px)`;
-        symbolStream.style.transition = 'none';
-        
-        
-        // 변경 후 실제 적용됐는지 확인
+
+        // 브라우저별 transform 호환성 개선
+        const transformValue = `translate3d(0, ${offset}px, 0)`;
+
+        try {
+            // 여러 브라우저 지원을 위한 다중 설정
+            symbolStream.style.webkitTransform = transformValue;
+            symbolStream.style.mozTransform = transformValue;
+            symbolStream.style.msTransform = transformValue;
+            symbolStream.style.transform = transformValue;
+
+            // 트랜지션 비활성화 (여러 브라우저 지원)
+            symbolStream.style.webkitTransition = 'none';
+            symbolStream.style.mozTransition = 'none';
+            symbolStream.style.msTransition = 'none';
+            symbolStream.style.transition = 'none';
+
+            // 강제 리플로우 트리거 (브라우저 호환성)
+            symbolStream.offsetHeight;
+
+        } catch (error) {
+            console.error(`updateReelPosition: Transform application failed for ${reel.id}:`, error);
+            // 실패 시 원래 transform 복원
+            symbolStream.style.transform = originalTransform;
+            return false;
+        }
+
+        // 변경 후 실제 적용됐는지 확인 (브라우저별 검증 강화)
         setTimeout(() => {
-            const actualTransform = window.getComputedStyle(symbolStream).transform;
-        }, 10);
-        
+            try {
+                const actualTransform = window.getComputedStyle(symbolStream).transform;
+                const actualWebkitTransform = window.getComputedStyle(symbolStream).webkitTransform;
+
+                // transform이 제대로 적용되지 않은 경우 재시도
+                if (actualTransform === 'none' && actualWebkitTransform === 'none') {
+                    console.warn(`updateReelPosition: Transform not applied for ${reel.id}, retrying...`);
+                    symbolStream.style.transform = transformValue;
+                }
+
+                // 중앙 심볼이 올바른지 검증
+                const centerSymbol = symbolStream.children[centerIndex];
+                if (centerSymbol && centerSymbol.textContent !== symbol) {
+                    console.warn(`updateReelPosition: Center symbol mismatch for ${reel.id}. Expected: ${symbol}, Got: ${centerSymbol.textContent}`);
+                }
+
+            } catch (verifyError) {
+                console.warn(`updateReelPosition: Verification failed for ${reel.id}:`, verifyError);
+            }
+        }, 50); // 더 긴 지연시간으로 안정성 확보
+
         return true;
     }
     
@@ -442,7 +551,13 @@ window.addEventListener('load', () => {
                             currentOffset -= totalHeight;
                         }
                         
-                        symbolStream.style.transform = `translateY(${currentOffset}px)`;
+                        // 브라우저별 transform 호환성
+                        const transformValue = `translate3d(0, ${currentOffset}px, 0)`;
+                        symbolStream.style.webkitTransform = transformValue;
+                        symbolStream.style.mozTransform = transformValue;
+                        symbolStream.style.msTransform = transformValue;
+                        symbolStream.style.transform = transformValue;
+
                         requestAnimationFrame(animate);
                     } else {
                         // 단순하게 정확한 최종 위치로 설정
@@ -488,13 +603,32 @@ window.addEventListener('load', () => {
                                 
                                 const interpolatedOffset = stopStartOffset + (bestOffset - stopStartOffset) * finalEase;
                                 
-                                symbolStream.style.transform = `translateY(${interpolatedOffset}px)`;
+                                // 브라우저별 transform 호환성
+                                const smoothTransformValue = `translate3d(0, ${interpolatedOffset}px, 0)`;
+                                symbolStream.style.webkitTransform = smoothTransformValue;
+                                symbolStream.style.mozTransform = smoothTransformValue;
+                                symbolStream.style.msTransform = smoothTransformValue;
+                                symbolStream.style.transform = smoothTransformValue;
+
                                 requestAnimationFrame(smoothStop);
                             } else {
-                                symbolStream.style.transform = `translateY(${bestOffset}px)`;
+                                // 최종 위치 설정 (브라우저별 호환성)
+                                const finalTransformValue = `translate3d(0, ${bestOffset}px, 0)`;
+                                symbolStream.style.webkitTransform = finalTransformValue;
+                                symbolStream.style.mozTransform = finalTransformValue;
+                                symbolStream.style.msTransform = finalTransformValue;
+                                symbolStream.style.transform = finalTransformValue;
+
+                                // 강제 리플로우로 확실한 적용
+                                symbolStream.offsetHeight;
+
                                 reel.classList.remove('spinning');
-                                highlightWinningSymbol(reel, finalSymbol);
-                                resolve();
+
+                                // 심볼 하이라이트를 약간 지연시켜 안정성 확보
+                                setTimeout(() => {
+                                    highlightWinningSymbol(reel, finalSymbol);
+                                    resolve();
+                                }, 10);
                             }
                         };
                         
