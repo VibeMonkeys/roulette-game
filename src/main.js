@@ -261,15 +261,14 @@ window.addEventListener('load', () => {
     }
     
     if (spinBtn && reels.length === 3) {
-        // 테스트를 위해 1회 참여 제한 해제
-        // if (hasPlayedBefore()) {
-        //     showAlreadyPlayedMessage();
-        // }
+        if (hasPlayedBefore()) {
+            showAlreadyPlayedMessage();
+        }
 
         const setupInitialPositions = () => {
             if (isGameRunning) return; // 게임 실행 중이면 초기화 중단
 
-            const initialSymbols = ['0', '2', '6'];
+            const initialSymbols = ['1', '3', '5'];
             let successCount = 0;
 
             
@@ -317,11 +316,10 @@ window.addEventListener('load', () => {
                 return;
             }
 
-            // 테스트를 위해 1회 참여 제한 해제
-            // if (hasPlayedBefore()) {
-            //     showAlreadyPlayedMessage();
-            //     return;
-            // }
+            if (hasPlayedBefore()) {
+                showAlreadyPlayedMessage();
+                return;
+            }
 
             isGameRunning = true; // 게임 실행 시작
             spinBtn.disabled = true;
@@ -340,18 +338,10 @@ window.addEventListener('load', () => {
                 showWinLine();
             }
 
-            // 테스트를 위해 1회 참여 제한 해제
-            // markAsPlayed();
+            markAsPlayed();
 
             isGameRunning = false; // 게임 실행 종료
             
-            // 테스트를 위해 버튼 즉시 활성화
-            if (spinBtn) {
-                spinBtn.disabled = false;
-                spinBtn.textContent = '🎁 행운 뽑기';
-                spinBtn.style.opacity = '1';
-                spinBtn.style.cursor = 'pointer';
-            }
             
             setTimeout(() => {
                 document.querySelectorAll('.symbol').forEach(symbol => {
@@ -624,14 +614,13 @@ window.addEventListener('load', () => {
             if (prizeInfo) prizeInfo.textContent = '';
             setTimeout(() => triggerCelebrationAnimation(), 500);
 
-            // 테스트를 위해 당첨 후 버튼 비활성화 해제
-            // const spinBtn = document.getElementById('spinBtn');
-            // if (spinBtn) {
-            //     spinBtn.disabled = true;
-            //     spinBtn.textContent = '🎉 당첨 완료';
-            //     spinBtn.style.opacity = '0.5';
-            //     spinBtn.style.cursor = 'not-allowed';
-            // }
+            const spinBtn = document.getElementById('spinBtn');
+            if (spinBtn) {
+                spinBtn.disabled = true;
+                spinBtn.textContent = '🎉 당첨 완료';
+                spinBtn.style.opacity = '0.5';
+                spinBtn.style.cursor = 'not-allowed';
+            }
 
             // 즉시 Firebase에 저장하여 다른 사용자들에게 게임 종료 알림
             saveWinner();
