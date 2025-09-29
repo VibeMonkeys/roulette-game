@@ -397,7 +397,7 @@ window.addEventListener('load', () => {
                 // 릴별로 더 큰 차이를 두어 긴장감 조성
                 const spinDuration = reelIndex === 0 ? 1500 :
                                    reelIndex === 1 ? 2400 :
-                                   4000; // 마지막 릴은 훨씬 길게
+                                   5500; // 마지막 릴은 원래 속도로 복원
                 const startTime = Date.now();
                 
                 const { symbolHeight, viewportTop } = getViewportSettings();
@@ -460,7 +460,7 @@ window.addEventListener('load', () => {
                         const distance = Math.abs(bestOffset - currentOffset);
                         // 마지막 릴은 훨씬 더 길고 부드러운 정지 (아슬아슬하게)
                         const smoothStopDuration = reelIndex === 2 ?
-                            Math.max(800, Math.min(1800, distance * 4)) :
+                            Math.max(1200, Math.min(2500, distance * 5)) :
                             Math.max(200, Math.min(400, distance * 1.2));
                         const stopStartTime = Date.now();
                         const stopStartOffset = currentOffset;
@@ -522,23 +522,23 @@ window.addEventListener('load', () => {
                             if (dramticProgress < 0.3) {
                                 // 갑자기 빨라짐!
                                 const accelerationProgress = dramticProgress / 0.3;
-                                return 35 + (accelerationProgress * 25); // 35 → 60
+                                return 30 + (accelerationProgress * 20); // 30 → 50 (원래 속도)
                             } else if (dramticProgress < 0.7) {
                                 // 고속 유지
-                                return 60;
+                                return 50;
                             } else if (dramticProgress < 0.8) {
                                 // 1차 감속 (여전히 빠름)
                                 const slowProgress = (dramticProgress - 0.7) / 0.1;
-                                return 60 - (slowProgress * 30); // 60 → 30
+                                return 50 - (slowProgress * 25); // 50 → 25
                             } else if (dramticProgress < 0.95) {
                                 // 2차 감속 (숫자가 보이기 시작)
                                 const slowProgress = (dramticProgress - 0.8) / 0.15;
-                                return 30 - (slowProgress * 22); // 30 → 8
+                                return 25 - (slowProgress * 18); // 25 → 7
                             } else {
                                 // 극적인 마지막 구간 (숫자 하나씩 천천히)
                                 const finalProgress = (dramticProgress - 0.95) / 0.05;
                                 const easeOut = 1 - Math.pow(finalProgress, 6);
-                                return Math.max(8 * easeOut, 0.3);
+                                return Math.max(7 * easeOut, 0.2);
                             }
                         }
                     } else if (reelIndex === 1) {
