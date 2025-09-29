@@ -127,12 +127,12 @@ body::before {
     }
 
     .title {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         margin-bottom: 3px;
     }
 
     .subtitle-korean {
-        font-size: 0.9rem;
+        font-size: 1.1rem;
         margin-bottom: 1px;
     }
 
@@ -183,12 +183,12 @@ body::before {
     }
 
     .title {
-        font-size: 1.6rem;
+        font-size: 1.7rem;
         margin-bottom: 4px;
     }
 
     .subtitle-korean {
-        font-size: 0.95rem;
+        font-size: 1.2rem;
         margin-bottom: 2px;
     }
 
@@ -226,12 +226,12 @@ body::before {
     }
 
     .title {
-        font-size: 1.8rem;
+        font-size: 1.7rem;
         margin-bottom: 6px;
     }
 
     .subtitle-korean {
-        font-size: 1.1rem;
+        font-size: 1.3rem;
         margin-bottom: 4px;
     }
 
@@ -267,10 +267,10 @@ body::before {
         margin: 35px 0 8px 0;
     }
     .title {
-        font-size: 1.9rem;
+        font-size: 1.7rem;
     }
     .subtitle-korean {
-        font-size: 1.1rem;
+        font-size: 1.3rem;
     }
 }
 
@@ -297,7 +297,7 @@ body::before {
 
 .subtitle-korean {
     font-family: 'Jua', 'Gaegu', cursive;
-    font-size: 1.0rem;
+    font-size: 1.3rem;
     color: #718096;
     text-shadow: 1px 1px 2px rgba(113, 128, 150, 0.3);
     letter-spacing: 0.5px;
@@ -551,7 +551,7 @@ body::before {
     position: absolute;
     pointer-events: none;
     z-index: 1000;
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     opacity: 0;
 }
 
@@ -813,7 +813,7 @@ body::before {
 
 .result-message {
     font-family: 'Jua', 'Kirang Haerang', cursive;
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     font-weight: 400;
     margin-bottom: 10px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
@@ -900,7 +900,7 @@ body::before {
 }
 
 .prize-symbols {
-    font-size: 1.2rem;
+    font-size: 1.7rem;
     min-width: 100px;
 }
 
@@ -1069,7 +1069,7 @@ body::before {
 
     .symbol {
         height: 40px;
-        font-size: 1.5rem;
+        font-size: 1.7rem;
     }
     
     .spin-button {
@@ -1154,6 +1154,6 @@ body::before {
 
     .symbol {
         height: 40px;
-        font-size: 1.2rem;
+        font-size: 1.7rem;
     }
 }
