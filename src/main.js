@@ -268,7 +268,7 @@ window.addEventListener('load', () => {
         const setupInitialPositions = () => {
             if (isGameRunning) return; // 게임 실행 중이면 초기화 중단
 
-            const initialSymbols = ['1', '3', '5'];
+            const initialSymbols = ['0', '2', '1'];
             let successCount = 0;
 
             
@@ -392,9 +392,9 @@ window.addEventListener('load', () => {
                 }
                 
                 // 릴별로 더 큰 차이를 두어 긴장감 조성
-                const spinDuration = reelIndex === 0 ? 2000 :
-                                   reelIndex === 1 ? 3200 :
-                                   5500; // 마지막 릴은 훨씬 길게
+                const spinDuration = reelIndex === 0 ? 1500 :
+                                   reelIndex === 1 ? 2400 :
+                                   4000; // 마지막 릴은 훨씬 길게
                 const startTime = Date.now();
                 
                 const { symbolHeight, viewportTop } = getViewportSettings();
@@ -457,8 +457,8 @@ window.addEventListener('load', () => {
                         const distance = Math.abs(bestOffset - currentOffset);
                         // 마지막 릴은 훨씬 더 길고 부드러운 정지 (아슬아슬하게)
                         const smoothStopDuration = reelIndex === 2 ?
-                            Math.max(1200, Math.min(2500, distance * 5)) :
-                            Math.max(250, Math.min(500, distance * 1.5));
+                            Math.max(800, Math.min(1800, distance * 4)) :
+                            Math.max(200, Math.min(400, distance * 1.2));
                         const stopStartTime = Date.now();
                         const stopStartOffset = currentOffset;
                         
@@ -502,7 +502,7 @@ window.addEventListener('load', () => {
                 function calculateSpinSpeed(progress) {
                     // 3번째 릴(마지막)은 2번째 릴이 끝나는 시점부터 변화
                     if (reelIndex === 2) {
-                        const secondReelEndPoint = 3200 / spinDuration; // 2번째 릴이 끝나는 비율
+                        const secondReelEndPoint = 2400 / spinDuration; // 2번째 릴이 끝나는 비율
 
                         if (progress < secondReelEndPoint) {
                             // 2번째 릴이 끝날 때까지는 일반 속도
@@ -519,48 +519,48 @@ window.addEventListener('load', () => {
                             if (dramticProgress < 0.3) {
                                 // 갑자기 빨라짐!
                                 const accelerationProgress = dramticProgress / 0.3;
-                                return 30 + (accelerationProgress * 20); // 30 → 50
+                                return 35 + (accelerationProgress * 25); // 35 → 60
                             } else if (dramticProgress < 0.7) {
                                 // 고속 유지
-                                return 50;
+                                return 60;
                             } else if (dramticProgress < 0.8) {
                                 // 1차 감속 (여전히 빠름)
                                 const slowProgress = (dramticProgress - 0.7) / 0.1;
-                                return 50 - (slowProgress * 25); // 50 → 25
+                                return 60 - (slowProgress * 30); // 60 → 30
                             } else if (dramticProgress < 0.95) {
                                 // 2차 감속 (숫자가 보이기 시작)
                                 const slowProgress = (dramticProgress - 0.8) / 0.15;
-                                return 25 - (slowProgress * 18); // 25 → 7
+                                return 30 - (slowProgress * 22); // 30 → 8
                             } else {
                                 // 극적인 마지막 구간 (숫자 하나씩 천천히)
                                 const finalProgress = (dramticProgress - 0.95) / 0.05;
                                 const easeOut = 1 - Math.pow(finalProgress, 6);
-                                return Math.max(7 * easeOut, 0.2);
+                                return Math.max(8 * easeOut, 0.3);
                             }
                         }
                     } else if (reelIndex === 1) {
-                        // 2번째 릴도 더 드라마틱하게
+                        // 2번째 릴을 더 부드럽고 일관되게
                         if (progress < 0.1) {
                             const easeProgress = progress / 0.1;
-                            return Math.pow(easeProgress, 0.5) * 35;
-                        } else if (progress < 0.7) {
-                            return 35;
+                            return Math.pow(easeProgress, 0.3) * 38;
+                        } else if (progress < 0.75) {
+                            return 38;
                         } else {
-                            const decelProgress = (progress - 0.7) / 0.3;
-                            const easeOut = 1 - Math.pow(decelProgress, 3.2);
-                            return Math.max(35 * easeOut, 0.6);
+                            const decelProgress = (progress - 0.75) / 0.25;
+                            const easeOut = 1 - Math.pow(decelProgress, 2.8);
+                            return Math.max(38 * easeOut, 0.7);
                         }
                     } else {
                         // 1번째 릴 (가장 빠르게 정지)
                         if (progress < 0.1) {
                             const easeProgress = progress / 0.1;
-                            return Math.pow(easeProgress, 0.5) * 30;
+                            return Math.pow(easeProgress, 0.5) * 35;
                         } else if (progress < 0.75) {
-                            return 30;
+                            return 35;
                         } else {
                             const decelProgress = (progress - 0.75) / 0.25;
                             const easeOut = 1 - Math.pow(decelProgress, 2.5);
-                            return Math.max(30 * easeOut, 0.8);
+                            return Math.max(35 * easeOut, 1.0);
                         }
                     }
                 }
