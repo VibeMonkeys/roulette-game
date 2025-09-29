@@ -73,19 +73,20 @@ body::before {
 @media (min-width: 769px) {
     .container {
         max-width: 800px;
-        padding: 20px;
+        padding: 20px 20px 10px 20px;
+        justify-content: flex-start;
     }
 }
 
 /* 헤더 스타일 */
 .header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 8px;
 }
 
 .title {
     font-family: 'Black Han Sans', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     font-weight: 400;
     color: var(--vintage-gold);
     text-shadow:
@@ -104,23 +105,169 @@ body::before {
 }
 
 .anniversary-img {
-    height: 1.8rem;
+    height: 2.2rem;
     vertical-align: middle;
-    margin: 0 4px;
+    margin: 0 5px;
     animation: bounce 2s infinite;
 }
 
 @media (max-width: 360px) {
     .anniversary-img {
-        height: 1.6rem;
-        margin: 0 3px;
+        height: 1.9rem;
+        margin: 0 4px;
+    }
+
+    .container {
+        justify-content: flex-start;
+        padding: 10px 5px;
+    }
+
+    .header {
+        margin-bottom: 8px;
+    }
+
+    .title {
+        font-size: 1.5rem;
+        margin-bottom: 3px;
+    }
+
+    .subtitle-korean {
+        font-size: 0.9rem;
+        margin-bottom: 1px;
+    }
+
+    .subtitle {
+        font-size: 0.75rem;
+        margin-bottom: 0px;
+    }
+
+    .game-area {
+        margin-bottom: 10px;
+    }
+
+    .slot-machine {
+        margin-bottom: 10px;
+    }
+
+    .spin-button {
+        margin: 10px auto 0 auto;
+        width: 140px;
+        height: 50px;
+        font-size: 1.1rem;
+    }
+
+    .result-area {
+        min-height: 60px;
+        margin-bottom: 10px;
+    }
+
+    .footer {
+        padding: 5px;
+        font-size: 0.6rem;
+    }
+}
+
+@media (min-width: 361px) and (max-width: 480px) {
+    .anniversary-img {
+        height: 2.1rem;
+        margin: 0 5px;
+    }
+
+    .container {
+        justify-content: flex-start;
+        padding: 15px 8px;
+    }
+
+    .header {
+        margin-bottom: 8px;
+    }
+
+    .title {
+        font-size: 1.6rem;
+        margin-bottom: 4px;
+    }
+
+    .subtitle-korean {
+        font-size: 0.95rem;
+        margin-bottom: 2px;
+    }
+
+    .subtitle {
+        font-size: 0.78rem;
+        margin-bottom: 0px;
+    }
+
+    .game-area {
+        margin-bottom: 12px;
+    }
+
+    .slot-machine {
+        margin-bottom: 12px;
+    }
+
+    .spin-button {
+        margin: 12px auto 0 auto;
+    }
+
+    .result-area {
+        min-height: 70px;
+        margin-bottom: 12px;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .anniversary-img {
+        height: 2.4rem;
+        margin: 0 6px;
+    }
+
+    .header {
+        margin-bottom: 8px;
+    }
+
+    .title {
+        font-size: 1.8rem;
+        margin-bottom: 6px;
+    }
+
+    .subtitle-korean {
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+    }
+
+    .subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 0px;
+    }
+
+    .game-area {
+        margin-bottom: 20px;
+    }
+
+    .slot-machine {
+        margin-bottom: 20px;
+    }
+
+    .spin-button {
+        margin: 20px auto 0 auto;
+    }
+
+    .result-area {
+        min-height: 90px;
+        margin-bottom: 20px;
     }
 }
 
 @media (min-width: 769px) {
     .anniversary-img {
-        height: 2.2rem;
-        margin: 0 6px;
+        height: 2.8rem;
+        margin: 0 8px;
+    }
+    .title {
+        font-size: 1.9rem;
+    }
+    .subtitle-korean {
+        font-size: 1.1rem;
     }
 }
 
@@ -147,27 +294,28 @@ body::before {
 
 .subtitle-korean {
     font-family: 'Jua', 'Gaegu', cursive;
-    font-size: 0.9rem;
+    font-size: 1.0rem;
     color: #2c5282;
     text-shadow: 1px 1px 2px rgba(44, 82, 130, 0.3);
     letter-spacing: 0.5px;
     font-weight: 400;
     line-height: 1.2;
     text-align: center;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
     -webkit-text-stroke: 0.5px var(--deep-brown);
     text-stroke: 0.5px var(--deep-brown);
 }
 
 .subtitle {
     font-family: 'Gaegu', 'Poor Story', cursive;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     color: #718096;
     text-shadow: 1px 1px 2px rgba(113, 128, 150, 0.3);
     letter-spacing: 1px;
     font-weight: 400;
     line-height: 1.2;
     opacity: 0.85;
+    margin-bottom: 0;
     -webkit-text-stroke: 0.3px var(--deep-brown);
     text-stroke: 0.3px var(--deep-brown);
 }
@@ -175,7 +323,7 @@ body::before {
 
 /* 게임 영역 - 모바일 우선 */
 .game-area {
-    margin-bottom: 20px;
+    margin: 0;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -184,13 +332,13 @@ body::before {
 
 @media (min-width: 769px) {
     .game-area {
-        margin-bottom: 30px;
+        margin-bottom: 20px;
     }
 }
 
 .slot-machine {
     padding: 0;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     position: relative;
     width: 100%;
 }
@@ -360,7 +508,7 @@ body::before {
     align-items: center;
     justify-content: center;
     font-family: 'Black Han Sans', 'Gugi', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: 400;
     border-bottom: 1px solid var(--warm-brown);
     background: linear-gradient(180deg, var(--warm-cream) 0%, var(--soft-beige) 100%);
@@ -371,7 +519,7 @@ body::before {
 @media (min-width: 769px) {
     .symbol {
         height: 50px;
-        font-size: 1.5rem;
+        font-size: 1.7rem;
     }
 }
 
@@ -612,11 +760,11 @@ body::before {
     border-radius: 30px;
     color: var(--deep-brown);
     font-family: 'Jua', 'Kirang Haerang', cursive;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     font-weight: 400;
     cursor: pointer;
     position: relative;
-    margin: 25px auto 0 auto;
+    margin: 15px auto 0 auto;
     display: block;
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
     box-shadow:
@@ -656,13 +804,13 @@ body::before {
 /* 결과 영역 */
 .result-area {
     text-align: center;
-    min-height: 100px;
-    margin-bottom: 20px;
+    min-height: 80px;
+    margin-bottom: 15px;
 }
 
 .result-message {
     font-family: 'Jua', 'Kirang Haerang', cursive;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: 400;
     margin-bottom: 10px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
@@ -871,7 +1019,7 @@ body::before {
     text-align: center;
     padding: 20px;
     color: var(--warm-brown);
-    font-size: 0.9rem;
+    font-size: 1.0rem;
     opacity: 0.7;
 }
 
