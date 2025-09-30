@@ -82,10 +82,33 @@ window.addEventListener('load', () => {
             const winners = snapshot.val();
             const winnerCount = winners ? Object.keys(winners).length : 0;
 
+            // UI 업데이트
+            updateWinnerCountDisplay(winnerCount);
+
             if (winnerCount >= MAX_WINNERS) {
                 endGame();
             }
         });
+    }
+
+    // 당첨자 수 표시 업데이트
+    function updateWinnerCountDisplay(count = null) {
+        const winnerCountElement = document.getElementById('winnerCount');
+        if (!winnerCountElement) return;
+
+        if (count === null) {
+            // 초기 로딩 시 Firebase에서 현재 당첨자 수 가져오기
+            winnersRef.once('value', (snapshot) => {
+                const winners = snapshot.val();
+                const currentCount = winners ? Object.keys(winners).length : 0;
+                winnerCountElement.textContent = `현재 당첨 현황: ${currentCount}/26`;
+            }).catch(error => {
+                console.error('당첨자 수 로딩 오류:', error);
+                winnerCountElement.textContent = `현재 당첨 현황: 0/26`;
+            });
+        } else {
+            winnerCountElement.textContent = `현재 당첨 현황: ${count}/26`;
+        }
     }
 
     // 게임 종료 처리
@@ -151,6 +174,7 @@ window.addEventListener('load', () => {
     // 페이지 로드 시 게임 상태 체크 시작
     checkGameStatus();
     monitorWinnerCount();
+    updateWinnerCountDisplay();
     
     // 화면 크기에 따른 심볼 높이와 뷰포트 위치 계산 (브라우저 호환성 강화)
     function getViewportSettings() {
@@ -287,7 +311,7 @@ window.addEventListener('load', () => {
         return true;
     }
     const prizes = {
-        '026': { message: '짠! 축하합니다!<br>당신이 바로 ★행운의 26명★입니다.<br>스타벅스 기프티콘을 송부드릴 예정입니다!' }
+        '026': { message: '짠! 축하합니다!<br>당신이 바로 ★행운의 26명★입니다.<br>스타벅스 기프티콘을 송부드릴 예정이니<br>인재경영실 담당자에게 화면을 보여주세요!' }
     };
     
     const spinBtn = document.getElementById('spinBtn');
