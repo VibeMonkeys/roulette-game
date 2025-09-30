@@ -506,7 +506,7 @@ window.addEventListener('load', () => {
                     spinBtn.style.color = '#333';
                     spinBtn.style.boxShadow = '0 4px 15px rgba(255, 215, 0, 0.4)';
                 } else {
-                    spinBtn.textContent = '❌ 이미 참여완료';
+                    spinBtn.textContent = '😭 꽝';
                 }
             }
             
